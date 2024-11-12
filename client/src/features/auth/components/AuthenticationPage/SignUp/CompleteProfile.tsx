@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 
 export const CompleteProfile = () => {
   const { data: session } = useSession();
-  console.log("session", session);
 
   const router = useRouter();
   const initValues = {

@@ -13,7 +13,6 @@ export const LoginPage = () => {
 
   const submitFormHandler = async (values: typeof initValues) => {
     const result = await login(values);
-    console.log(result);
   };
 
   return (

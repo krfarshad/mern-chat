@@ -8,7 +8,6 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   const statusCode = res.status ? res.status : 500;
-  console.log(err);
   if (err instanceof ApiError) {
     res.status(err.status).json({
       status: err.status,
