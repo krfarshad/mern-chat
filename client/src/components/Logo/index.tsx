@@ -5,7 +5,7 @@ export const Logo = () => {
     <>
       <Link
         href="/"
-        className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700"
+        className="flex h-10 w-10 items-center justify-center gap-1 rounded-2xl bg-indigo-100 text-indigo-700"
       >
         <svg
           className="h-6 w-6"
@@ -22,7 +22,7 @@ export const Logo = () => {
           ></path>
         </svg>
       </Link>
-      <div className="ml-2 text-2xl font-bold">MERN Chat</div>
+      <h1 className="ml-2 text-2xl font-bold text-slate-100">MERN Chat</h1>
     </>
   );
 };
