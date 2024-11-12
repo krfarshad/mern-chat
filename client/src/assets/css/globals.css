@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 :root {
+  --primary: #8caeff;
+}
+
+:root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -28,4 +32,22 @@ body {
   .custom-gradient {
     background: linear-gradient(179deg, #2d2d2d 1.26%, #2d2d2d 151.48%);
   }
+}
+
+.infinite-scroll-component {
+  @apply !overflow-visible;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+}
+.invisible-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 8px;
+  background-color: #fff2;
+  border-radius: 2px;
 }
