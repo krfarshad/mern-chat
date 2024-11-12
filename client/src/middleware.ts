@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const excludeRoutes = ["/login", "500"];
+  const excludeRoutes = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/forget-password",
+    "500",
+  ];
 
   const token: any = await getToken({
     req: request,
@@ -11,12 +16,8 @@ export async function middleware(request: NextRequest) {
   });
   const hasToken = token && token?.user?.access_token ? true : false;
 
-  if (
-    !hasToken &&
-    request.nextUrl.searchParams.get("autoLogin") &&
-    !excludeRoutes.includes(path)
-  ) {
-    const signInUrl = new URL("/login", request.url);
+  if (!hasToken && !excludeRoutes.includes(path)) {
+    const signInUrl = new URL("/auth/login", request.url);
     signInUrl.searchParams.set(
       "callbackUrl",
       request.nextUrl.pathname + request.nextUrl.search,
