@@ -1,10 +1,16 @@
-"use client";
 import { Field, Form, Formik } from "formik";
-import { loginValidationSchema } from "../../utils/loginValidationSchecma";
+import { loginValidationSchema } from "../../../utils/loginValidationSchecma";
 import { FInput, FSubmit } from "@/components/Fields";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import { setStateProp } from "@/types";
+import { signIn } from "next-auth/react";
 
-export const SingUpPage = () => {
+type Props = {
+  setStep: setStateProp<"register" | "complete">;
+};
+export const SignUpForm = (props: Props) => {
+  const { setStep } = props;
   const initValues = {
     username: "",
     password: "",
@@ -12,9 +18,22 @@ export const SingUpPage = () => {
   };
 
   const submitFormHandler = async (values: typeof initValues) => {
-    console.log(values);
-  };
+    try {
+      const result = await signIn("credentials", {
+        ...values,
+        redirect: false,
+      });
 
+      if (result?.error) {
+        toast.error(result.error ?? "Registration failed!");
+      } else if (result?.status === 200) {
+        toast.success("Successful registration!");
+        setStep("complete");
+      }
+    } catch (error) {
+      toast.error("Something went wrong with your request!");
+    }
+  };
   return (
     <>
       <div>
@@ -28,10 +47,10 @@ export const SingUpPage = () => {
         validationSchema={loginValidationSchema}
       >
         <Form>
-          <Field component={FInput} label="username" name="username" required />
+          <Field component={FInput} label="Username" name="username" required />
           <Field
             component={FInput}
-            label="Email address"
+            label="Email"
             name="email"
             type="email"
             required
@@ -39,7 +58,7 @@ export const SingUpPage = () => {
           <div className="pt-1">
             <Field
               component={FInput}
-              label="password"
+              label="Password"
               name="password"
               type="password"
               checkStrength

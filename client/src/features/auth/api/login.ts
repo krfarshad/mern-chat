@@ -5,7 +5,7 @@ type Props = {
   username: string;
   password: string;
 };
-export const forgetPassword = async (
+export const login = async (
   props: Props,
 ): Promise<ApiResponse<AuthUserResponse>> => {
   const model = new Auth();

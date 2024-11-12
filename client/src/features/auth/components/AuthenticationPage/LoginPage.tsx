@@ -3,16 +3,17 @@ import { Field, Form, Formik } from "formik";
 import { loginValidationSchema } from "../../utils/loginValidationSchecma";
 import { FInput, FSubmit } from "@/components/Fields";
 import Link from "next/link";
+import { login } from "../../api/login";
 
 export const LoginPage = () => {
   const initValues = {
     username: "",
     password: "",
-    verifyCode: "",
   };
 
   const submitFormHandler = async (values: typeof initValues) => {
-    console.log(values);
+    const result = await login(values);
+    console.log(result);
   };
 
   return (
