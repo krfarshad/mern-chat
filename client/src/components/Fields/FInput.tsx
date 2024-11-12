@@ -87,7 +87,7 @@ export const FInput: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
                 Wow... great, that's hard enough
               </span>
             ) : (
-              <span className="text-secondary my-1 block text-sm">
+              <span className="my-1 block text-sm text-red-400">
                 It's too weak, put a harder phrase
               </span>
             )}

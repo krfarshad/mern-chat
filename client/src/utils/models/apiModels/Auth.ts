@@ -1,24 +1,19 @@
 import { Model } from "../Model";
 
 export type AuthUserResponse = {
-  id: string;
-  name: string;
   username: string;
   email: string;
+  accessToken: string;
 };
 
 export type AuthTokenResponse = {
   id: number;
-  name: string;
+  displayName: string;
   username: string;
   email: string;
-  token_type: string;
-  access_token: string;
+  accessToken: string;
   expires_at: number;
-  avatar_image: string;
-  unread_messages_count: number;
-  unread_notifications_count: number;
-  email_verified_at: string | null;
+  avatar: string;
 };
 
 export class Auth extends Model {
@@ -36,6 +31,10 @@ export class Auth extends Model {
 
   public register = () => {
     return this.customUrl("auth/register");
+  };
+
+  public completeProfile = () => {
+    return this.customUrl("auth/complete-profile");
   };
 
   public authCheck = () => {

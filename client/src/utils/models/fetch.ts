@@ -12,7 +12,7 @@ const customFetch: FetchType = async (url, init) => {
 
   if (!reqHeaders.get("Authorization")) {
     const session = await getSession();
-    token = session?.user?.access_token;
+    token = session?.user?.accessToken;
     reqHeaders.set("Authorization", `Bearer ${token}`);
   }
 
