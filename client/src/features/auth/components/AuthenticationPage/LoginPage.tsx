@@ -17,6 +17,11 @@ export const LoginPage = () => {
 
   return (
     <>
+      <div>
+        <p className="mb-4 text-center text-sm leading-6 text-gray-100">
+          Login to have access to all features.
+        </p>
+      </div>
       <Formik
         initialValues={initValues}
         onSubmit={submitFormHandler}

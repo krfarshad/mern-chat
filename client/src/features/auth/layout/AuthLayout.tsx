@@ -13,11 +13,6 @@ export const AuthLayout = (props: PropsWithChildren) => {
           <div className="flex items-center justify-center py-4 text-center">
             <Logo />
           </div>
-          <div>
-            <p className="mb-4 text-center text-sm leading-6 text-gray-100">
-              Login to have access to all features.
-            </p>
-          </div>
           {children}
         </div>
         <LazyBackground />

@@ -8,7 +8,7 @@ export const SingUpPage = () => {
   const initValues = {
     username: "",
     password: "",
-    verifyCode: "",
+    email: "",
   };
 
   const submitFormHandler = async (values: typeof initValues) => {
@@ -17,13 +17,25 @@ export const SingUpPage = () => {
 
   return (
     <>
+      <div>
+        <p className="mb-4 text-center text-sm leading-6 text-gray-100">
+          Welcome, Please fill out all fields.
+        </p>
+      </div>
       <Formik
         initialValues={initValues}
         onSubmit={submitFormHandler}
         validationSchema={loginValidationSchema}
       >
         <Form>
-          <Field component={FInput} label="username" name="username" />
+          <Field component={FInput} label="username" name="username" required />
+          <Field
+            component={FInput}
+            label="Email address"
+            name="email"
+            type="email"
+            required
+          />
           <div className="pt-1">
             <Field
               component={FInput}
@@ -32,6 +44,7 @@ export const SingUpPage = () => {
               type="password"
               checkStrength
               isPassword
+              required
             />
           </div>
           <Field className="mt-4" component={FSubmit} label="submit" />

@@ -19,6 +19,12 @@ export const ForgetPasswordPage = () => {
   };
   return (
     <>
+      <div>
+        <p className="mb-4 text-center text-sm leading-6 text-gray-100">
+          Enter your registered email address. After submission, we will send a
+          recovery email to this address.
+        </p>
+      </div>
       <Formik
         initialValues={initValues}
         onSubmit={submitFormHandler}

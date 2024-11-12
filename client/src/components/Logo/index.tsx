@@ -22,7 +22,7 @@ export const Logo = () => {
           ></path>
         </svg>
       </Link>
-      <h1 className="ml-2 text-2xl font-bold text-slate-100">MERN Chat</h1>
+      <h1 className="ml-2 text-2xl font-bold text-slate-400">MERN Chat</h1>
     </>
   );
 };
