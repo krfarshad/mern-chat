@@ -7,20 +7,28 @@ import { completeProfileSchema } from "@/features/auth/utils/completeProfileSche
 import { useSession } from "next-auth/react";
 
 export const CompleteProfile = () => {
-  const { data: session } = useSession();
+  const { data: session, update: sessionUpdate } = useSession();
 
   const router = useRouter();
   const initValues = {
-    token: session?.user.accessToken,
     displayName: "",
     bio: "",
     avatar: "",
   };
 
   const submitFormHandler = async (values: typeof initValues) => {
-    const result = await completeProfile(values);
-    if (result.status == 201) {
+    const result = await completeProfile({ values });
+    if (result.status == 202) {
       toast.success(result.message ?? `Welcome ${result.data.displayName}`);
+      await sessionUpdate({
+        ...session,
+        user: {
+          ...session?.user,
+          displayName: result.data.displayName,
+          bio: result.data.bio,
+          avatar: result.data.avatar,
+        },
+      });
       router.push("/");
     } else {
       toast.error(result.message ?? "Something wrong with your request!");

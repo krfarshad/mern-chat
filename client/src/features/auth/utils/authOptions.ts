@@ -57,13 +57,15 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       return url;
     },
-    async jwt({ token, user, account, trigger, session }) {
-      if (trigger === "update" && session?.user) {
-        token.user = user;
-      }
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.user = user;
       }
+
+      if (trigger === "update" && session?.user) {
+        token.user = session.user;
+      }
+
       return token;
     },
     async session({ session, token }) {

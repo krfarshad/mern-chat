@@ -14,6 +14,7 @@ export type AuthTokenResponse = {
   accessToken: string;
   expires_at: number;
   avatar: string;
+  bio?: string;
 };
 
 export class Auth extends Model {
