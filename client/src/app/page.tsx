@@ -1,7 +1,10 @@
-"use client";
-
-import { HomePage } from "@/features/landing";
+import { ChoseToStart } from "@/features/chat";
+import { ChatLayout } from "@/layout";
 
 export default function Home() {
-  return <HomePage />;
+  return (
+    <ChatLayout>
+      <ChoseToStart />
+    </ChatLayout>
+  );
 }
