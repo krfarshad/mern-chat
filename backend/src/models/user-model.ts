@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  status: {
+    type: String,
+    enum: ["online", "offline", "busy", "away"],
+    default: "offline",
+  },
+  lastSeen: Date,
 });
 
 export const User = mongoose.model("User", userSchema);
