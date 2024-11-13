@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
-import profile from "../../assets/images/profile.jpg";
 import { useSession } from "next-auth/react";
+import { ProfileCardLoading } from "@/components";
 
 export const MyProfile = () => {
   const { data: session, status } = useSession();
   if (status === "loading") {
-    return <span>loading...</span>;
+    return <ProfileCardLoading />;
   }
   return (
     <>
