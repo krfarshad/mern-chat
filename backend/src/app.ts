@@ -5,7 +5,9 @@ import passport from "passport";
 import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
 import "./utils/passport";
-import "./database";
+import "./config/database";
+import { io } from "./config/socket";
+
 import dotenv from "dotenv";
 import { config } from "./config/global.config";
 import helmet from "helmet";
@@ -48,7 +50,9 @@ app.use(helmet());
 
 // socket
 const server = createServer(app);
-const io = new Server(server);
+
+io.attach(server);
+
 io.on("connection", (socket) => {
   console.log("user connected");
   socket.emit("message", { Farshad: "hello " });
