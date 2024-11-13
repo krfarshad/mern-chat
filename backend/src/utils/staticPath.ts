@@ -2,15 +2,15 @@ import { Request } from "express";
 
 export const staticPath = (
   req: Request,
-  type: "music" | "cover" | "artistAvatar",
+  type: "avatar" | "cover" | "artistAvatar",
   fileName: string
 ) => {
   const baseUrl = req.protocol + "://" + req.get("host") + "/uploads/";
 
   let url = baseUrl;
   switch (type) {
-    case "music":
-      url += "musics/" + fileName;
+    case "avatar":
+      url += "avatar/" + fileName;
       break;
 
     case "cover":

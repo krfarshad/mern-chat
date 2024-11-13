@@ -7,6 +7,7 @@ import { config } from "../config/global.config";
 import { ApiSuccess } from "../utils/ApiSuccess";
 import { ApiError } from "../utils/ApiError";
 import { User } from "../models/user-model";
+import { staticPath } from "../utils/staticPath";
 class AuthHandler {
   private tokenCreation = async (req: Request, res: Response, user: any) => {
     const accessToken = jwt.sign({ id: user.id }, config.jwt_secret, {
@@ -29,12 +30,12 @@ class AuthHandler {
   // @access public
   public register = asyncHandler(async (req: Request, res: Response) => {
     const data = matchedData(req);
-    const findUser = await User.findOne({ username: data.username });
-
-    if (findUser) {
+    const { username, email } = data;
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
       res
         .status(400)
-        .json(new ApiError(400, "This username has been used before!"));
+        .json(new ApiError(400, "Username or Email already exists"));
     }
 
     data.password = hashPassword(data.password);
@@ -153,42 +154,47 @@ class AuthHandler {
 
   public completeProfile = asyncHandler(async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
-
     if (!token) {
       res.status(401).json({ message: "Token is required" });
     } else {
       try {
         // Decode and verify the JWT token
-        const decoded = jwt.verify(token, config.jwt_secret);
-        console.log("decoded", decoded);
+        const decoded: any = jwt.verify(token, config.jwt_secret);
+        const { id } = decoded;
 
-        const { displayName, bio, avatar } = req.body;
-
-        // Find the user based on the decoded userId
-        let user = await User.findOne({ username: decoded });
-
+        let user = await User.findById(id);
         if (!user) {
           res.status(404).json({ message: "User not found" });
         } else {
+          const { displayName, bio } = req.body;
           if (displayName) user.displayName = displayName;
           if (bio) user.bio = bio;
-          if (avatar) user.avatar = avatar;
-          await user.save();
-          res.status(202).json(
-            new ApiSuccess(
-              202,
-              {
-                username: user.username,
-                displayName: user.displayName,
-                email: user.email,
-                avatar: user.avatar,
-                bio: user.bio,
-              },
-              "Profile updated successfully"
-            )
-          );
+          if (req?.file?.filename) user.avatar = req.file.filename;
+          const updatedUser = await user.save();
+
+          const userResponse = {
+            username: updatedUser.username,
+            displayName: updatedUser.displayName,
+            email: updatedUser.email,
+            bio: updatedUser.bio,
+            avatar: updatedUser.avatar
+              ? staticPath(req, "avatar", updatedUser.avatar)
+              : "",
+          };
+
+          res
+            .status(202)
+            .json(
+              new ApiSuccess(202, userResponse, "Profile updated successfully")
+            );
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (
+          error.name === "JsonWebTokenError" ||
+          error.name === "TokenExpiredError"
+        ) {
+          res.status(401).json({ message: "Invalid or expired token" });
+        }
         res.status(500).json({ message: error });
       }
     }

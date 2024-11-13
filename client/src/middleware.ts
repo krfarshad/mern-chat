@@ -1,6 +1,7 @@
+import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-
+import { NEXT_AUTH_SECRET } from "@/config";
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const excludeRoutes = [
@@ -12,9 +13,9 @@ export async function middleware(request: NextRequest) {
 
   const token: any = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: NEXT_AUTH_SECRET,
   });
-  const hasToken = token && token?.user?.access_token ? true : false;
+  const hasToken = token && token?.user?.accessToken ? true : false;
 
   if (!hasToken && !excludeRoutes.includes(path)) {
     const signInUrl = new URL("/auth/login", request.url);

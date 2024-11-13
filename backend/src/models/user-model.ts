@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: mongoose.Schema.Types.String,
+    unique: true,
     validate: {
       validator: function (mail: string) {
         return /.+@.+\..+/.test(mail);

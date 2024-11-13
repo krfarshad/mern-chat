@@ -6,6 +6,7 @@ import { authRateLimiter } from "../../middlewares/rate-limit-middleware";
 import { CSRFMiddleware } from "../../middlewares/csrf-middleware";
 import { checkSchemaValidator } from "../../middlewares/checkSchema-middleware";
 import { createUserValidationSchema } from "../../models/schemas/register-schema";
+import { upload } from "../../middlewares/upload-middleware";
 
 const router = Router();
 
@@ -22,8 +23,11 @@ router.post(
   AuthController.login
 );
 
-router.put("/auth/complete-profile", AuthController.completeProfile);
-
+router.post(
+  "/auth/complete-profile",
+  [upload.single("avatar")],
+  AuthController.completeProfile
+);
 
 router.get("/auth/status", AuthController.status);
 
