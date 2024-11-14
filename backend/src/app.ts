@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
 import "./utils/passport";
 import "./config/database";
-import { io } from "./config/socket";
+import http from "http";
 
 import dotenv from "dotenv";
 import { config } from "./config/global.config";
@@ -49,18 +49,26 @@ app.use(passport.session());
 app.use(helmet());
 
 // socket
-const server = createServer(app);
-
-io.attach(server);
-
-io.on("connection", (socket) => {
-  console.log("user connected");
-  socket.emit("message", { Farshad: "hello " });
-  socket.on("anther event", (data) => {
-    console.log("data", data);
-  });
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
 });
 
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("newMessage", (message) => {
+    console.log("New message:", message);
+    io.emit("newMessage", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
 app.use("/api/v1/", routes);
 app.use(errorHandler);
 

@@ -1,4 +1,4 @@
-import { ApiResponse, QueryParams } from "@/types";
+import { ApiPaginateResponse, QueryParams } from "@/types";
 import { Chat, ChatListResponse, makeModelBaseOnQuery } from "@/utils/models";
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 
 export const getChats = async (
   props: Props,
-): Promise<ApiResponse<ChatListResponse[]>> => {
+): Promise<ApiPaginateResponse<ChatListResponse[]>> => {
   const { pageParam } = props;
 
   const apiModel = new Chat();
