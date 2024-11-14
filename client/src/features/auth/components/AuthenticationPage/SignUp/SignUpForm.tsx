@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { setStateProp } from "@/types";
 import { signIn } from "next-auth/react";
+import { register } from "@/features/auth/api/register";
 
 type Props = {
   setStep: setStateProp<"register" | "complete">;
@@ -19,16 +20,18 @@ export const SignUpForm = (props: Props) => {
 
   const submitFormHandler = async (values: typeof initValues) => {
     try {
-      const result = await signIn("credentials", {
-        ...values,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        toast.error(result.error ?? "Registration failed!");
-      } else if (result?.status === 200) {
-        toast.success("Successful registration!");
-        setStep("complete");
+      const res = await register({ values });
+      if (res.data) {
+        const result = await signIn("credentials", {
+          ...values,
+          redirect: false,
+        });
+        if (result?.error) {
+          toast.error(result.error ?? "Registration failed!");
+        } else if (result?.status === 200) {
+          toast.success("Successful registration!");
+          setStep("complete");
+        }
       }
     } catch (error) {
       toast.error("Something went wrong with your request!");

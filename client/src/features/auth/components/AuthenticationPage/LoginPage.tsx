@@ -3,16 +3,33 @@ import { Field, Form, Formik } from "formik";
 import { loginValidationSchema } from "../../utils/loginValidationSchecma";
 import { FInput, FSubmit } from "@/components/Fields";
 import Link from "next/link";
-import { login } from "../../api/login";
+import { signIn } from "next-auth/react";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export const LoginPage = () => {
+  const router = useRouter();
   const initValues = {
     username: "",
     password: "",
   };
 
   const submitFormHandler = async (values: typeof initValues) => {
-    const result = await login(values);
+    try {
+      const result = await signIn("credentials", {
+        ...values,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error(result.error ?? "Login failed!");
+      } else if (result?.status === 200) {
+        toast.success("Successful login!");
+        router.push("/");
+      }
+    } catch (error) {
+      toast.error("Something went wrong with your request!");
+    }
   };
 
   return (

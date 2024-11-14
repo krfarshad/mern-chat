@@ -1,8 +1,7 @@
 import { NEXT_AUTH_SECRET } from "@/config";
-import { fetch } from "@/utils/models/";
 import CredentialsProvider from "next-auth/providers/credentials";
-import type { NextAuthOptions, User } from "next-auth";
-import { register } from "../api/register";
+import type { NextAuthOptions } from "next-auth";
+import { login } from "../api/login";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,11 +13,6 @@ export const authOptions: NextAuthOptions = {
           type: "text",
           placeholder: "your_username",
         },
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "Email address",
-        },
         password: {
           label: "Password",
           type: "password",
@@ -28,11 +22,10 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         const values = {
           username: credentials?.username,
-          email: credentials?.email,
           password: credentials?.password,
         };
 
-        const res = await register({ values });
+        const res = await login({ values });
 
         if (res.data) {
           return res.data as any;
