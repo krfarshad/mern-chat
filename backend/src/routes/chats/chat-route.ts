@@ -1,12 +1,34 @@
 import { Router } from "express";
 import { ChatController } from "../../controllers/chat-controller";
+import { getUserByToken } from "../../middlewares/getUser-middleware";
 
 const router: Router = Router();
 
-router.get("/chats", ChatController.getChats);
+// chat lists
+router.get("/chats", [getUserByToken], ChatController.getChats);
 
-router.post("/chats", ChatController.postMessage);
+// create chat
+router.post("/chats", [getUserByToken], ChatController.createChat);
 
-router.get("/chats/:chatId", ChatController.getChat);
+// chat show
+router.get("/chat:chatId", [getUserByToken], ChatController.getChat);
+
+// chat messages
+router.get(
+  "/chats/:chatId/messages",
+  [getUserByToken],
+  ChatController.getMessages
+);
+
+// post message
+router.post("/chats:chatId", [getUserByToken], ChatController.postMessage);
+
+// invite to chat
+router.post("/chats/:chatId/invite", [getUserByToken], ChatController.invite);
+
+// accept and join to chat
+
+// left chat
+router.post("/chats/:chatId/leave", [getUserByToken], ChatController.leave);
 
 export default router;

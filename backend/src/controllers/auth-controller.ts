@@ -93,25 +93,33 @@ class AuthHandler {
     const { username, password } = req.body;
 
     const user: any = await User.findOne({ username });
+    console.log("user", user);
     if (!user) {
       res.status(401).json(new ApiError(401, "Incorrect username or password"));
     }
 
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) {
-      res.status(401).json(new ApiError(401, "Incorrect username or password"));
-    }
+    // TODO: UNCOMMENT THIS COMPARE
+    // const isMatch = await comparePassword(password, user.password);
+    // const isMatch = await comparePassword(password, user.password);
 
-    const accessToken = await this.tokenCreation(req, res, user);
-    res
-      .status(200)
-      .json(
-        new ApiSuccess(
-          200,
-          { username: user.username, role: user.role, token: accessToken },
-          "Login successful"
-        )
-      );
+    console.log("isMatch", password);
+
+    if (password != user.password) {
+      res.status(401).json(new ApiError(401, "Incorrect username or password"));
+    } else {
+      const accessToken = await this.tokenCreation(req, res, user);
+      console.log("accessToken", accessToken);
+
+      res
+        .status(200)
+        .json(
+          new ApiSuccess(
+            200,
+            { username: user.username, avatar: user.avatar, accessToken },
+            "Login successful"
+          )
+        );
+    }
   });
 
   // @desc refresh token

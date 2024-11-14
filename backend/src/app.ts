@@ -15,7 +15,6 @@ import cors from "cors";
 // import { setCSRFTokenCookie } from "./middlewares/set-crf-middleware";
 import path from "path";
 import { errorHandler } from "./middlewares/errorHandler";
-import { createServer } from "node:http";
 import { Server } from "socket.io";
 import logger from "./utils/logger";
 
