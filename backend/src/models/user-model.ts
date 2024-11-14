@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Counter from "../utils/counter";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -38,6 +39,25 @@ const userSchema = new mongoose.Schema({
     default: "offline",
   },
   lastSeen: Date,
+});
+
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isNew) {
+    try {
+      const counter = await Counter.findOneAndUpdate(
+        { model: "Chat" },
+        { $inc: { count: 1 } },
+        { new: true, upsert: true }
+      );
+      user.id = counter.count;
+      next();
+    } catch (error) {
+      next(error as any);
+    }
+  } else {
+    next();
+  }
 });
 
 export const User = mongoose.model("User", userSchema);
