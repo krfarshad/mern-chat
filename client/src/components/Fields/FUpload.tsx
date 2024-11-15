@@ -49,10 +49,10 @@ export const FUpload: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
 
   return (
     <>
-      <div className="relative mt-2">
+      <div className="relative my-1">
         <label
           htmlFor="images"
-          className="border-light text-light flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-3xl border bg-slate-800 px-4  py-0 transition-all hover:opacity-80 hover:transition-all"
+          className="border-light text-light flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border bg-gray-900 px-4  py-2 transition-all hover:opacity-80 hover:transition-all"
         >
           <p className="text-light">{rest?.label ?? ""}</p>
         </label>
