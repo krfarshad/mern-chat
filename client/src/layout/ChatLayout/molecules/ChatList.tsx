@@ -5,7 +5,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 export const ChatList = () => {
   const { chats, fetchNextPage, hasNextPage } = useChatList();
-  console.log(chats, fetchNextPage, hasNextPage);
   return (
     <>
       {chats && chats.length > 0 && (
@@ -18,7 +17,7 @@ export const ChatList = () => {
               loading more...
             </div>
           }
-          className="flex flex-col-reverse"
+          className="flex flex-col gap-2"
         >
           {chats?.map((chat) => <ChatListItem chatItem={chat} />)}
         </InfiniteScroll>
