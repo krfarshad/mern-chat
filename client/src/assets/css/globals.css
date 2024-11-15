@@ -46,3 +46,7 @@ body {
   background-color: #fff2;
   border-radius: 2px;
 }
+
+.infinite-scroll-component {
+  overflow-x: hidden !important;
+}
