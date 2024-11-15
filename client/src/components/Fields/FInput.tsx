@@ -37,7 +37,7 @@ export const FInput: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
   };
 
   const classes = clsx(
-    "w-full rounded-[36px] disabled:cursor-not-allowed text-light placeholder:text-gray-300 border border-neutral-800 bg-black px-5 py-2.5 text-sm text-gray-300 outline-none backdrop-blur-3xl transition-all placeholder:text-sm focus:border-light",
+    "w-full rounded-lg disabled:cursor-not-allowed text-light placeholder:text-gray-300 border border-neutral-800 bg-black px-5 py-3 text-sm text-gray-300 outline-none backdrop-blur-3xl transition-all placeholder:text-sm focus:border-light",
     className ? className : "",
   );
   let restOptimize: any = { ...rest };
@@ -46,7 +46,7 @@ export const FInput: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
   }
 
   return (
-    <div className="mx-auto mb-4 w-full">
+    <div className="mx-auto my-1 w-full">
       <div className="w-full">
         {label && (
           <label
@@ -54,7 +54,7 @@ export const FInput: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
             className="text-light mb-2 block text-left text-sm capitalize"
           >
             {label}
-            {required && <span className="text-secondary ml-1 text-xl">*</span>}
+            {required && <span className="ml-1 text-xl text-secondary">*</span>}
           </label>
         )}
         <div className="relative">
@@ -81,9 +81,9 @@ export const FInput: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
         ) : null}
         {checkStrength && field.value && (
           <div className="error-messages mt-4 pr-2">
-            <div className="mb-2 h-1 w-full rounded-[36px] border border-neutral-800 bg-gradient-to-r from-pink-500 to-emerald-300 backdrop-blur-3xl transition-all"></div>
+            <div className="mb-2 h-1 w-full rounded-lg border border-neutral-800 bg-gradient-to-r from-pink-500 to-emerald-300 backdrop-blur-3xl transition-all"></div>
             {isPasswordStrong(field.value) ? (
-              <span className="text-success my-1 block text-sm">
+              <span className="my-1 block text-sm text-success">
                 Wow... great, that's hard enough
               </span>
             ) : (
