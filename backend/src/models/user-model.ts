@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   createdAt: {
-    type: Date,
+    type: String,
     default: Date.now,
   },
   status: {
@@ -46,7 +46,7 @@ userSchema.pre("save", async function (next) {
   if (user.isNew) {
     try {
       const counter = await Counter.findOneAndUpdate(
-        { model: "Chat" },
+        { model: "User" },
         { $inc: { count: 1 } },
         { new: true, upsert: true }
       );

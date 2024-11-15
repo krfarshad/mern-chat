@@ -7,10 +7,7 @@ const messageSchema = new mongoose.Schema({
     ref: "Chat",
     required: true,
   },
-  type: {
-    enum: ["action", "text"],
-    default: "text",
-  },
+
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -31,7 +28,7 @@ messageSchema.pre("save", async function (next) {
   if (message.isNew) {
     try {
       const counter = await Counter.findOneAndUpdate(
-        { model: "Chat" },
+        { model: "Message" },
         { $inc: { count: 1 } },
         { new: true, upsert: true }
       );
