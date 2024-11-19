@@ -11,7 +11,7 @@ router.get("/chats", [getUserByToken], ChatController.getChats);
 router.post("/chats", [getUserByToken], ChatController.createChat);
 
 // chat show
-router.get("/chat:chatId", [getUserByToken], ChatController.getChat);
+router.get("/chats/:chatId", [getUserByToken], ChatController.getChat);
 
 // chat messages
 router.get(

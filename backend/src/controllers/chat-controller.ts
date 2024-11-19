@@ -97,23 +97,27 @@ class ChatHandler {
 
   public getChat = asyncHandler(async (req: Request, res: Response) => {
     const { chatId } = req.params;
-
-    const chat = await Chat.findOne({ id: chatId });
-    if (!chat) {
-      res.status(404).json({ message: "Chat not found" });
-    }
-
-    const existingParticipantIds = chat?.participants?.map((p) =>
-      p._id.toString()
-    );
-
-    if (!existingParticipantIds?.includes(chatId)) {
-      res.status(401).json({ message: "Chat not found" });
-    }
+    const userId = req.user;
     try {
-      return res.status(200).json(new ApiSuccess(200, chat, "Success"));
+      const chat = await Chat.findOne({ id: chatId })
+        .populate("admin", "username  avatar id")
+        .populate("lastMessage", "text createdAt")
+        .populate("participants", "id username  avatar")
+        .lean();
+      if (!chat) {
+        return res.status(404).json({ message: "Chat not found" });
+      }
+      const existingParticipantIds = chat?.participants?.filter(
+        (p) => p._id.toString() != userId
+      );
+      const result = {
+        ...chat,
+        participants: existingParticipantIds,
+      };
+
+      return res.status(200).json(new ApiSuccess(200, result, "Success"));
     } catch (error) {
-      res.status(500).json({ message: "Error fetching chat" });
+      return res.status(500).json({ message: "Error fetching chat" });
     }
   });
 
