@@ -74,10 +74,10 @@ class ChatHandler {
     const { page = 1, limit = 20 } = req.query;
 
     try {
-      const chat = await Chat.findById(chatId);
-      if (!chat) return res.status(404).json({ message: "Chat not found" });
+      const chat = await Chat.findOne({ id: Number(chatId) });
 
-      const messages = await Message.find({ chat: chatId })
+      if (!chat) return res.status(404).json({ message: "Chat not found" });
+      const messages = await Message.find({ chat: chat._id })
         .sort({ createdAt: -1 })
         .skip((Number(page) - 1) * Number(limit))
         .limit(Number(limit));

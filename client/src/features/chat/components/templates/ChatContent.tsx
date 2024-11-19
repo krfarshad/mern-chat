@@ -5,8 +5,8 @@ import { ChatContentLoading } from "@/components";
 import { Refetch } from "@/features/error";
 import { notFound } from "next/navigation";
 import { ChatFooter } from "../molecules/ChatFooter";
-import { MessageItems } from "../molecules/MessageItems";
 import { ChatHeader } from "../molecules/ChatHeader";
+import { Messages } from "../molecules/Messages";
 
 type Props = {
   id: string;
@@ -34,13 +34,7 @@ export const ChatContent = (props: Props) => {
       {isSuccess && (
         <>
           <ChatHeader data={data.data} />
-          <div className="-mx-4 mb-4 flex h-full flex-col overflow-x-auto px-4">
-            <div className="flex h-full flex-col">
-              <div className="grid grid-cols-12 gap-y-2">
-                <MessageItems id={id} />
-              </div>
-            </div>
-          </div>
+          <Messages id={id} />
           <ChatFooter id={id} />
         </>
       )}
