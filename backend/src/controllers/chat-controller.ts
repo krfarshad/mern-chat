@@ -5,7 +5,6 @@ import { ApiSuccess } from "../utils/ApiSuccess";
 import { Message } from "../models/message-model";
 import { io } from "../config/socket";
 import { User } from "../models/user-model";
-import { strictTransportSecurity } from "helmet";
 
 class ChatHandler {
   public getChats = asyncHandler(async (req: Request, res: Response) => {
@@ -15,7 +14,7 @@ class ChatHandler {
       const chats = await Chat.find({
         participants: { $in: [userId] },
       })
-        .sort({ updatedAt: -1 })
+        .sort({ createdAt: -1 })
         .skip((Number(page) - 1) * Number(limit))
         .limit(Number(limit))
         .populate("admin", "username  avatar id")
@@ -25,8 +24,16 @@ class ChatHandler {
 
       const total = await Chat.countDocuments();
 
+      const filterData = chats.map((chat) => {
+        return {
+          ...chat,
+          participants: chat.participants.filter(
+            (participant) => String(participant._id) !== String(userId)
+          ),
+        };
+      });
       res.json(
-        new ApiSuccess(200, chats, "Successful", {
+        new ApiSuccess(200, filterData, "Successful", {
           total,
           page: Number(page),
           totalPages: Math.ceil(total / Number(limit)),
@@ -117,26 +124,31 @@ class ChatHandler {
       type,
       avatar,
     };
-    if (type == "group") {
-      data.name = name;
-      data.admin = userId;
-    } else {
-      const users = await User.find({ username: { $in: participants } });
-      const userIds = users.map((user) => user._id);
-      data.participants = [...userIds];
+    if (type === "group") {
+      Object.assign(data, { name, admin: userId, avatar: req.file?.filename });
     }
+
+    const users = await User.find({ username: { $in: participants } });
+    const userIds = users.map((user) => user._id);
+
+    data.participants = [userId, ...userIds];
+
     try {
       const newChat = await Chat.create(data);
+      let resultData: any = {
+        id: newChat.id,
+        type: newChat.type,
+      };
+      console.log("newChat", newChat);
+      if (resultData.type === "group") {
+        Object.assign(resultData, {
+          name: newChat.name,
+          admin: newChat.admin,
+          avatar: newChat.avatar,
+        });
+      }
 
-      res.json(
-        new ApiSuccess(
-          201,
-          {
-            id: newChat.id,
-          },
-          "Successful"
-        )
-      );
+      res.json(new ApiSuccess(201, resultData, "Successful"));
     } catch (error) {
       res.status(500).json({ message: "Error fetching messages" });
     }

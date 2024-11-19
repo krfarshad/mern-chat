@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import Counter from "../utils/counter";
 
 const chatSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    unique: true,
+  },
   type: {
     type: String,
     enum: ["private", "group"],
@@ -30,6 +34,10 @@ const chatSchema = new mongoose.Schema({
     ref: "Message",
   },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },

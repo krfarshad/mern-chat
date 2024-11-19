@@ -16,7 +16,7 @@ class UserHandler {
       const users = await User.find({
         username: { $regex: filterSearch.trim(), $options: "i" },
       })
-        .select("id username avatar")
+        .select("id username avatar displayName")
         .limit(20)
         .sort({ username: 1 })
         .lean();

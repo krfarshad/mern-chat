@@ -16,7 +16,6 @@ type UseChatListResult = {
 export const useChatList = (): UseChatListResult => {
   const queryClient = useQueryClient();
   const socket = useSocket();
-  console.log("socket", socket);
   const res = useInfiniteQuery({
     queryKey: ["chats"],
     queryFn: async ({ pageParam = 1 }) => await getChats({ pageParam }),

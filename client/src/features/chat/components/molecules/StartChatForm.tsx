@@ -2,22 +2,19 @@ import React, { useState } from "react";
 import { Button, Card } from "@nextui-org/react";
 import { Formik, Form, Field } from "formik";
 import { FInput, FUpload, UsersMultiSelect } from "@/components";
+import { createChat } from "../../api/createChat";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-const initialValuesPrivate = {
+const initialValuesGroup: CreateChatProps = {
   type: "private",
-  participants: "",
-};
-
-const initialValuesGroup = {
-  type: "group",
   participants: [],
   name: "",
-  avatar: null,
+  avatar: "",
 };
-
 export const StartChatForm = () => {
   const [step, setStep] = useState(1);
-
+  const router = useRouter();
   const handleNextStep = () => {
     setStep(step + 1);
   };
@@ -26,13 +23,19 @@ export const StartChatForm = () => {
     setStep(step - 1);
   };
 
-  const handleSubmit = (values: any) => {
-    console.log("Form Submitted:", values);
+  const handleSubmit = async (values: any) => {
+    const res = await createChat({ values });
+    if (res.status == 201) {
+      toast.success("Successful creation!");
+      res.data.type === "private" && router.push(`/chats/${res.data.id}`);
+    } else {
+      toast.error(res.message ?? "Oppps try gain.");
+    }
   };
 
   return (
     <Formik
-      initialValues={initialValuesPrivate}
+      initialValues={initialValuesGroup}
       //   validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
@@ -74,8 +77,6 @@ export const StartChatForm = () => {
                 <div>
                   <label htmlFor="participants">Participant Username</label>
                   <UsersMultiSelect name="participants" isMulti={false} />
-
-                  <Field name="participants" placeholder="Enter username" />
                 </div>
               )}
 

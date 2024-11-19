@@ -19,7 +19,9 @@ export const ChatList = () => {
           }
           className="flex flex-col gap-2"
         >
-          {chats?.map((chat) => <ChatListItem chatItem={chat} />)}
+          {chats?.map((chat) => (
+            <ChatListItem key={`chat_item_${chat.id}`} chatItem={chat} />
+          ))}
         </InfiniteScroll>
       )}
     </>

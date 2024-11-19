@@ -4,6 +4,7 @@ export type UserResponse = {
   id: number;
   username: string;
   avatar?: string;
+  displayName: string;
 };
 
 export class User extends Model {
