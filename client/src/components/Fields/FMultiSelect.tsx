@@ -1,36 +1,19 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   Autocomplete,
   Chip,
   Avatar,
-  Spinner,
   AutocompleteItem,
 } from "@nextui-org/react";
 import { useField, useFormikContext } from "formik";
 import { getUsers } from "@/features/users";
 import { UserResponse } from "@/utils/models";
+import { useDebounce } from "@/hooks/useDebounce";
 
 type UsersMultiSelectProps = {
   name: string;
   isMulti?: boolean;
-};
-
-// Custom debounce function
-const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-
-  return useCallback(
-    (...args: any[]) => {
-      if (timer) clearTimeout(timer);
-      setTimer(
-        setTimeout(() => {
-          callback(...args);
-        }, delay),
-      );
-    },
-    [callback, delay, timer],
-  );
 };
 
 export const UsersMultiSelect = ({
@@ -41,8 +24,7 @@ export const UsersMultiSelect = ({
   const { setFieldValue } = useFormikContext();
   const [options, setOptions] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(false);
-  const [query, setQuery] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>(
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(
     field.value || [],
   );
 
@@ -51,59 +33,65 @@ export const UsersMultiSelect = ({
     const res = await getUsers({ username });
     setOptions(res.data || []);
     setLoading(false);
-  }, 500);
+  }, 2000);
 
-  useEffect(() => {
-    if (query) debouncedFetchUsers(query);
-  }, [query]);
-
-  const handleSelect = (user: UserResponse) => {
+  const handleSelect = (username: any) => {
     if (isMulti) {
-      const updatedUsers = selectedUsers.some((u) => u.id === user.id)
-        ? selectedUsers.filter((u) => u.id !== user.id)
-        : [...selectedUsers, user];
+      const updatedUsers = selectedUsers.some((u) => u === username)
+        ? selectedUsers.filter((u) => u !== username)
+        : [...selectedUsers, username];
 
       setSelectedUsers(updatedUsers);
       setFieldValue(
         name,
-        updatedUsers.map((u) => u.username),
+        updatedUsers.map((u) => u),
       );
     } else {
-      setSelectedUsers([user]);
-      setFieldValue(name, user.username);
+      setSelectedUsers([username]);
+      setFieldValue(name, [username]);
     }
   };
 
-  const handleRemove = (userId: number) => {
-    const updatedUsers = selectedUsers.filter((u) => u.id !== userId);
+  const handleRemove = (username: string) => {
+    const updatedUsers = selectedUsers.filter((u) => u != username);
     setSelectedUsers(updatedUsers);
     setFieldValue(
       name,
-      updatedUsers.map((u) => u.username),
+      updatedUsers.map((u) => username),
     );
   };
 
+  const onChangeHandler = async (value: string) => {
+    await debouncedFetchUsers(value);
+  };
   return (
     <div>
       <Autocomplete
-        value={query}
-        onInputChange={(value: string) => setQuery(value)}
+        value={field.value}
+        onInputChange={(value: string) => onChangeHandler(value)}
         isLoading={loading}
         labelPlacement="inside"
-        className="max-w-xs"
+        className="text-light mt-1 w-full rounded-md border border-slate-400 bg-gray-800 pl-1 text-xs placeholder:text-gray-100"
         items={options}
+        onSelectionChange={handleSelect}
       >
         {(item) => (
-          <>
-            {item && (
-              <AutocompleteItem key={item.username} textValue={item.username}>
-                <div className="flex items-center gap-2">
-                  <Avatar src={item.avatar} alt={item.username} size="sm" />
-                  <span>{item.username}</span>
-                </div>
-              </AutocompleteItem>
-            )}
-          </>
+          <AutocompleteItem key={item.username} textValue={item.username}>
+            <div className="flex items-center gap-2">
+              <Avatar
+                alt={item.username}
+                className="flex-shrink-0"
+                size="sm"
+                src={item.avatar}
+              />
+              <div className="flex flex-col">
+                <span className="text-small">{item.username}</span>
+                <span className="text-tiny text-default-400">
+                  {item.displayName}
+                </span>
+              </div>
+            </div>
+          </AutocompleteItem>
         )}
       </Autocomplete>
 
@@ -111,12 +99,11 @@ export const UsersMultiSelect = ({
         <div className="mt-2 flex flex-wrap gap-2">
           {selectedUsers.map((user) => (
             <Chip
-              key={user.username}
+              key={user}
               className="flex items-center gap-2"
-              onClose={() => handleRemove(user.id)}
+              onClose={() => handleRemove(user)}
             >
-              <Avatar src={user.avatar} alt={user.username} />
-              {user.username}
+              {user}
             </Chip>
           ))}
         </div>
