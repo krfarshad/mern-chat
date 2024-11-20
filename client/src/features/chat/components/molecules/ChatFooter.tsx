@@ -1,10 +1,36 @@
+import usePost from "@/hooks/usePost";
+import { useRef, useState } from "react";
+import { postMessage } from "../../api/postMessage";
+
 type Props = {
   id: string;
 };
 export const ChatFooter = (props: Props) => {
   const { id } = props;
+  const textRef = useRef<HTMLInputElement>(null);
+  const [text, setText] = useState("");
+  const { isPending, isSuccess, data, post } = usePost({
+    // queryKey: [],
+    postFn: postMessage,
+  });
+
+  const handleSubmit = async () => {
+    const text = textRef?.current?.value;
+    if (text) {
+      const values = {
+        text,
+      };
+      const res = await post({
+        values,
+        chatId: id,
+      });
+      if (res.data?.status == 201) {
+        textRef.current!.value = "";
+      }
+    }
+  };
   return (
-    <div className="flex h-16 w-full flex-row items-center bg-white p-3">
+    <div className="flex h-16 w-full flex-row items-center bg-white p-3 light">
       <div>
         <button className="flex items-center justify-center text-gray-400 hover:text-gray-600">
           <svg
@@ -27,7 +53,8 @@ export const ChatFooter = (props: Props) => {
         <div className="relative w-full">
           <input
             type="text"
-            className="flex h-10 w-full rounded-xl border pl-4 focus:border-indigo-300 focus:outline-none"
+            ref={textRef}
+            className="bg-sate-400 flex h-10 w-full rounded-xl border pl-4 focus:border-indigo-300 focus:outline-none"
           />
           <button className="absolute right-0 top-0 flex h-full w-12 items-center justify-center text-gray-400 hover:text-gray-600">
             <svg
@@ -48,7 +75,11 @@ export const ChatFooter = (props: Props) => {
         </div>
       </div>
       <div className="ml-4">
-        <button className="flex flex-shrink-0 items-center justify-center rounded-xl bg-indigo-500 px-4 py-1 text-white hover:bg-indigo-600">
+        <button
+          onClick={handleSubmit}
+          disabled={isPending}
+          className="flex flex-shrink-0 items-center justify-center rounded-xl bg-indigo-500 px-4 py-1 text-white hover:bg-indigo-600"
+        >
           <span>Send</span>
           <span className="ml-2">
             <svg

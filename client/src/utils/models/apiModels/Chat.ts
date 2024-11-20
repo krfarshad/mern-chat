@@ -19,7 +19,15 @@ export type GroupChatResponse = {
 
 export type ChatShowResponse = PrivateChatResponse | GroupChatResponse;
 
-export type MessagesResponse = any;
+export type PrivateMessage = {
+  id: number;
+  sender: { username: string; avatar: string };
+  text: string;
+  createdAt: string;
+  chat: { id: number };
+};
+
+export type MessageResponse = PrivateMessage;
 
 export class Chat extends Model {
   public resource(): string {

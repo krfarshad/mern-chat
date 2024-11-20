@@ -47,22 +47,28 @@ class ChatHandler {
   public postMessage = asyncHandler(async (req: Request, res: Response) => {
     const { chatId } = req.params;
     const { text } = req.body;
+
     const userId = req.user;
+    const chat = await Chat.findOne({ id: Number(chatId) });
 
-    let chat;
-    chat = await Chat.findById(chatId);
-    const message = await Message.create({
-      chat: chat?._id,
-      sender: userId,
-      text,
-    });
-
+    if (!chat) return res.status(404).json({ message: "Chat not found" });
     try {
-      await Chat.findByIdAndUpdate(chatId, { lastMessage: message._id });
+      const message = await Message.create({
+        chat: chat._id,
+        sender: userId,
+        text,
+      });
+
+      await Chat.findByIdAndUpdate(chat?._id, { lastMessage: message._id });
 
       io.to(chatId).emit("newMessage", message);
 
-      res.status(201).json(message);
+      const data = {
+        id: message.id,
+        text: message.text,
+        createdAt: message.createdAt,
+      };
+      res.status(201).json(new ApiSuccess(201, data, "successful posted"));
     } catch (error) {
       res.status(500).json({ message: "Error creating chat" });
     }
@@ -71,18 +77,28 @@ class ChatHandler {
   //   get chat
   public getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { chatId } = req.params;
-    const { page = 1, limit = 20 } = req.query;
-
+    const { page = 1, limit = 10 } = req.query;
     try {
       const chat = await Chat.findOne({ id: Number(chatId) });
 
       if (!chat) return res.status(404).json({ message: "Chat not found" });
+
       const messages = await Message.find({ chat: chat._id })
         .sort({ createdAt: -1 })
         .skip((Number(page) - 1) * Number(limit))
-        .limit(Number(limit));
+        .limit(Number(limit))
+        .select("-_id -__v")
+        .populate({
+          path: "chat",
+          select: "id -_id",
+        })
+        .populate({
+          path: "sender",
+          select: "id username avatar -_id",
+        });
 
-      const total = await Message.countDocuments({ chat: chatId });
+      const total = await Message.countDocuments({ chat: chat._id });
+
       res.json(
         new ApiSuccess(200, messages, "Successful", {
           total,
@@ -143,7 +159,6 @@ class ChatHandler {
         id: newChat.id,
         type: newChat.type,
       };
-      console.log("newChat", newChat);
       if (resultData.type === "group") {
         Object.assign(resultData, {
           name: newChat.name,

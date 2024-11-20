@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getMessages } from "../api/getMessages";
-import { MessagesResponse } from "@/utils/models";
+import { MessageResponse } from "@/utils/models";
 
 type Props = {
   id: string;
@@ -17,13 +17,15 @@ const useMessages = (props: Props) => {
     queryKey: ["messages", id],
     queryFn: queryFn,
     initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.meta.last_page == lastPage.meta.current_page
-        ? undefined
-        : lastPage.meta.current_page + 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.meta?.page < lastPage?.meta?.totalPages) {
+        return lastPage.meta.page + 1;
+      }
+      return undefined;
+    },
   });
 
-  const messages = res.data?.pages.reduce((acc: MessagesResponse[], page) => {
+  const messages = res.data?.pages.reduce((acc: MessageResponse[], page) => {
     return [...acc, ...page.data];
   }, []);
 

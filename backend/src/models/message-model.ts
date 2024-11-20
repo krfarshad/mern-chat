@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import Counter from "../utils/counter";
 
 const messageSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    unique: true,
+  },
   chat: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Chat",

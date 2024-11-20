@@ -21,7 +21,11 @@ router.get(
 );
 
 // post message
-router.post("/chats:chatId", [getUserByToken], ChatController.postMessage);
+router.post(
+  "/chats/:chatId/messages",
+  [getUserByToken],
+  ChatController.postMessage
+);
 
 // invite to chat
 router.post("/chats/:chatId/invite", [getUserByToken], ChatController.invite);
