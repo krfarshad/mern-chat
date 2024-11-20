@@ -6,12 +6,9 @@ export type ApiResponse<T> = {
 };
 
 export type MetaResponse = {
-  current_page: number;
-  from: number;
-  last_page: number;
-  links: [];
-  to: number;
+  page: number;
   total: number;
+  totalPages: number;
 };
 export type ApiPaginateResponse<T> = {
   data: T;
