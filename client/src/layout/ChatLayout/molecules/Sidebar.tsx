@@ -27,7 +27,7 @@ export const Sidebar = () => {
             4
           </span>
         </div>
-        <div className="-mx-2 mt-4 flex max-h-80 flex-col space-y-1 overflow-y-auto">
+        <div className="-mx-4 mt-4 flex max-h-80 flex-col space-y-1 overflow-y-auto bg-slate-50 ">
           <ChatList />
         </div>
       </div>

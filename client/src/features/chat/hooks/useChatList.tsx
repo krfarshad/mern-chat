@@ -20,10 +20,12 @@ export const useChatList = (): UseChatListResult => {
     queryKey: ["chats"],
     queryFn: async ({ pageParam = 1 }) => await getChats({ pageParam }),
     initialPageParam: 1,
-    getNextPageParam: (params) =>
-      params.meta.page > params.meta.totalPages
-        ? undefined
-        : params.meta.page + 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.meta?.page < lastPage?.meta?.totalPages) {
+        return lastPage.meta.page + 1;
+      }
+      return undefined;
+    },
   });
 
   const chats = res.data?.pages.reduce((acc: ChatListResponse[], page) => {

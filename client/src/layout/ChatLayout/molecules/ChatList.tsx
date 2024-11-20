@@ -4,8 +4,7 @@ import { ChatListItem } from "./ChatListItem";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export const ChatList = () => {
-  const { chats, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useChatList();
+  const { chats, fetchNextPage, hasNextPage } = useChatList();
   return (
     <>
       {chats && chats.length > 0 && (
@@ -13,8 +12,8 @@ export const ChatList = () => {
           dataLength={chats ? chats.length : 0}
           next={() => fetchNextPage()}
           hasMore={hasNextPage || false}
-          className="flex flex-col gap-2"
-          loader={<>loader...</>}
+          className="flex flex-col gap-2 px-1"
+          loader={<></>}
         >
           <>
             {chats?.map((chat) => (
@@ -23,13 +22,11 @@ export const ChatList = () => {
                 chatItem={chat}
               />
             ))}
-            <div className="my-2 w-full rounded-md bg-slate-100 p-4 text-xs text-slate-800">
-              {isFetchingNextPage
-                ? "Loading more..."
-                : hasNextPage
-                  ? "Load More"
-                  : "Nothing more to load"}
-            </div>
+            {hasNextPage && (
+              <div className="my-4 p-1">
+                <div className="p-4 text-center text-xs">loading more ...</div>
+              </div>
+            )}
           </>
         </InfiniteScroll>
       )}
