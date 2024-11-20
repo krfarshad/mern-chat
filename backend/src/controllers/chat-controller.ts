@@ -5,6 +5,7 @@ import { ApiSuccess } from "../utils/ApiSuccess";
 import { Message } from "../models/message-model";
 import { io } from "../config/socket";
 import { User } from "../models/user-model";
+import { staticPath } from "../utils/staticPath";
 
 class ChatHandler {
   public getChats = asyncHandler(async (req: Request, res: Response) => {
@@ -17,9 +18,19 @@ class ChatHandler {
         .sort({ createdAt: -1 })
         .skip((Number(page) - 1) * Number(limit))
         .limit(Number(limit))
-        .populate("admin", "username  avatar id")
-        .populate("lastMessage", "text createdAt")
-        .populate("participants", "id username  avatar")
+        .select("-_id -__v")
+        .populate({
+          path: "admin",
+          select: "username avatar -_id",
+        })
+        .populate({
+          path: "lastMessage",
+          select: "text createdAt -_id",
+        })
+        .populate({
+          path: "participants",
+          select: "id username avatar",
+        })
         .lean();
 
       const total = await Chat.countDocuments();
@@ -27,9 +38,10 @@ class ChatHandler {
       const filterData = chats.map((chat) => {
         return {
           ...chat,
-          participants: chat.participants.filter(
-            (participant) => String(participant._id) !== String(userId)
-          ),
+          participants: chat.participants
+            .filter((participant) => String(participant._id) !== String(userId))
+            .map(({ _id, ...rest }) => rest),
+          avatar: chat.avatar && staticPath(req, "avatar", chat.avatar),
         };
       });
       res.json(
@@ -116,8 +128,9 @@ class ChatHandler {
     const userId = req.user;
     try {
       const chat = await Chat.findOne({ id: chatId })
-        .populate("admin", "username  avatar id")
-        .populate("lastMessage", "text createdAt")
+        .select("-__v -_id")
+        .populate("admin", "username  avatar id -_id")
+        .populate("lastMessage", "text createdAt -_id")
         .populate("participants", "id username  avatar")
         .lean();
       if (!chat) {
@@ -128,7 +141,7 @@ class ChatHandler {
       );
       const result = {
         ...chat,
-        participants: existingParticipantIds,
+        participants: existingParticipantIds.map(({ _id, ...rest }) => rest),
       };
 
       return res.status(200).json(new ApiSuccess(200, result, "Success"));
@@ -138,18 +151,23 @@ class ChatHandler {
   });
 
   public createChat = asyncHandler(async (req: Request, res: Response) => {
-    const { name, type, avatar, participants } = req.body;
+    const { name, type, participants } = req.body;
     const userId = req.user;
     let data: any = {
       type,
-      avatar,
     };
+    let members;
     if (type === "group") {
       Object.assign(data, { name, admin: userId, avatar: req.file?.filename });
+      members = participants.split(",");
+    } else {
+      members = participants;
     }
 
-    const users = await User.find({ username: { $in: participants } });
+    const users = await User.find({ username: { $in: members } });
     const userIds = users.map((user) => user._id);
+    console.log("users", users);
+    console.log("userIds", userIds);
 
     data.participants = [userId, ...userIds];
 
@@ -162,7 +180,6 @@ class ChatHandler {
       if (resultData.type === "group") {
         Object.assign(resultData, {
           name: newChat.name,
-          admin: newChat.admin,
           avatar: newChat.avatar,
         });
       }
@@ -174,7 +191,7 @@ class ChatHandler {
   });
 
   public invite = asyncHandler(async (req: Request, res: Response) => {
-    const { participants } = req.body; // Participants by username
+    const { participants } = req.body;
     const { chatId } = req.params;
     const userId = req.user;
 

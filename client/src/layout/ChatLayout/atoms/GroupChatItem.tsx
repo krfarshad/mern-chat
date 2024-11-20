@@ -22,7 +22,7 @@ export const GroupChatItem = (props: Props) => {
       </div>
       <div className="ml-2 flex-1 text-left">
         <p className="max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold">
-          {chatItem?.name}
+          {chatItem.name}
         </p>
         <p className="max-w-[140px] overflow-hidden text-ellipsis whitespace-nowrap text-xs text-gray-500">
           {chatItem?.lastMessage?.text}

@@ -10,7 +10,6 @@ const initialValuesGroup: CreateChatProps = {
   type: "private",
   participants: [],
   name: "",
-  avatar: "",
 };
 export const StartChatForm = () => {
   const [step, setStep] = useState(1);

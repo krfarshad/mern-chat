@@ -26,7 +26,7 @@ const useMessages = (props: Props) => {
   });
 
   const messages = res.data?.pages.reduce((acc: MessageResponse[], page) => {
-    return [...acc, ...page.data];
+    return page?.data ? [...acc, ...page?.data] : acc;
   }, []);
 
   return { ...res, messages };

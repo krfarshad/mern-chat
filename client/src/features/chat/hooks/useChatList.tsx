@@ -29,7 +29,7 @@ export const useChatList = (): UseChatListResult => {
   });
 
   const chats = res.data?.pages.reduce((acc: ChatListResponse[], page) => {
-    return [...acc, ...page.data];
+    return page?.data ? [...acc, ...page?.data] : acc;
   }, []);
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ChatController } from "../../controllers/chat-controller";
 import { getUserByToken } from "../../middlewares/getUser-middleware";
+import { upload } from "../../middlewares/upload-middleware";
 
 const router: Router = Router();
 
@@ -8,7 +9,11 @@ const router: Router = Router();
 router.get("/chats", [getUserByToken], ChatController.getChats);
 
 // create chat
-router.post("/chats", [getUserByToken], ChatController.createChat);
+router.post(
+  "/chats",
+  [getUserByToken, upload.single("avatar")],
+  ChatController.createChat
+);
 
 // chat show
 router.get("/chats/:chatId", [getUserByToken], ChatController.getChat);

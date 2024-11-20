@@ -7,7 +7,6 @@ import { NextAuthProvider } from "./AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 interface Props extends ChildrenProps {}
 
 const AppProvider = (props: Props) => {
@@ -35,6 +34,7 @@ const AppProvider = (props: Props) => {
           transition={Flip}
           className="md:text-md text-sm"
         />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </NextAuthProvider>
   );

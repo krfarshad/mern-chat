@@ -36,6 +36,9 @@ export const UsersMultiSelect = ({
   }, 2000);
 
   const handleSelect = (username: any) => {
+    if (!username) {
+      return;
+    }
     if (isMulti) {
       const updatedUsers = selectedUsers.some((u) => u === username)
         ? selectedUsers.filter((u) => u !== username)
@@ -51,7 +54,6 @@ export const UsersMultiSelect = ({
       setFieldValue(name, [username]);
     }
   };
-
   const handleRemove = (username: string) => {
     const updatedUsers = selectedUsers.filter((u) => u != username);
     setSelectedUsers(updatedUsers);
@@ -67,7 +69,6 @@ export const UsersMultiSelect = ({
   return (
     <div>
       <Autocomplete
-        value={field.value}
         onInputChange={(value: string) => onChangeHandler(value)}
         isLoading={loading}
         labelPlacement="inside"
