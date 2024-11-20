@@ -13,7 +13,6 @@ type Props = {
 export const Messages = (props: Props) => {
   const { id } = props;
   const loaderRef = useRef<HTMLDivElement>(null);
-  const chatBoxRef = useRef<HTMLDivElement>(null);
 
   const { data: session } = useSession();
   const {
@@ -27,12 +26,6 @@ export const Messages = (props: Props) => {
   } = useMessages({
     id,
   });
-
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   useEffect(() => {
     const options: IntersectionObserverInit = {
@@ -71,10 +64,7 @@ export const Messages = (props: Props) => {
 
   return (
     <div className="flex h-full w-full flex-col-reverse  overflow-y-auto">
-      <div
-        className="flex flex-col-reverse overflow-y-auto px-5"
-        ref={chatBoxRef}
-      >
+      <div className="flex flex-col-reverse overflow-y-auto px-5">
         {isSuccess && (
           <div>
             {messages && messages.length > 0 && (
