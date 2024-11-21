@@ -1,4 +1,5 @@
 import { MessageResponse } from "@/utils/models";
+import { timeFormatter } from "@/utils/timeFormatter";
 import { Card, CardBody } from "@nextui-org/react";
 
 type Props = {
@@ -10,7 +11,7 @@ export const SelfMessage = (props: Props) => {
   return (
     <div className="my-2 flex items-end justify-end px-0.5 light">
       <p className="mr-1 text-[10px] text-gray-600">
-        {new Date(createdAt).toLocaleTimeString()}
+        {timeFormatter(createdAt)}
       </p>
       <Card shadow="sm" className="max-w-sm bg-primary">
         <CardBody>

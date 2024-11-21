@@ -1,4 +1,5 @@
 import { MessageResponse } from "@/utils/models";
+import { timeFormatter } from "@/utils/timeFormatter";
 import { Card, CardBody } from "@nextui-org/react";
 
 type Props = {
@@ -16,9 +17,7 @@ export const OtherMessage = (props: Props) => {
           </div>
         </CardBody>
       </Card>
-      <p className="text-[10px] text-gray-600">
-        {new Date(createdAt).toLocaleTimeString()}
-      </p>
+      <p className="text-[10px] text-gray-600">{timeFormatter(createdAt)}</p>
     </div>
   );
 };
