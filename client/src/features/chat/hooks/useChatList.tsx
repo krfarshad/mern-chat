@@ -6,19 +6,17 @@ import { getChats } from "../api/getChats";
 import { ChatListResponse } from "@/utils/models";
 import { useSocket } from "@/hooks/useSocket";
 
-type UseChatListResult = {
-  chats: ChatListResponse[] | undefined;
-  fetchNextPage: () => void;
-  hasNextPage: boolean | undefined;
-  isFetchingNextPage: boolean;
-};
-
-export const useChatList = (): UseChatListResult => {
+export const useChatList = () => {
   const queryClient = useQueryClient();
   const socket = useSocket();
+  const queryFn = (props: any) =>
+    getChats({
+      pageParam: props.pageParam,
+    });
+
   const res = useInfiniteQuery({
     queryKey: ["chats"],
-    queryFn: async ({ pageParam = 1 }) => await getChats({ pageParam }),
+    queryFn: queryFn,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (lastPage?.meta?.page < lastPage?.meta?.totalPages) {

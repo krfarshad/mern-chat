@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { SelfMessage } from "./SelfMessage";
 import { OtherMessage } from "./OtherMessage";
 import { Refetch } from "@/features/error";
+import { ChatContentLoading, SpinLoading } from "@/components";
 
 type Props = {
   id: string;
@@ -55,7 +56,7 @@ export const Messages = (props: Props) => {
   }, [messages]);
 
   if (isLoading && !messages) {
-    return <>general loading</>;
+    return <ChatContentLoading />;
   }
 
   if (isError) {
@@ -87,8 +88,8 @@ export const Messages = (props: Props) => {
                     </Fragment>
                   ))}
                   {hasNextPage && (
-                    <div className="my-4 p-1" ref={loaderRef}>
-                      <div className="p-4">loading ...</div>
+                    <div className="my-1 p-1" ref={loaderRef}>
+                      <SpinLoading />
                     </div>
                   )}
                 </>
