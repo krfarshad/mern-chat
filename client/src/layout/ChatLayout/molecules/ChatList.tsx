@@ -4,10 +4,39 @@ import { ChatListItem } from "./ChatListItem";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { SpinLoading } from "@/components";
 import { Refetch } from "@/features/error";
+import { useEffect, useRef } from "react";
 
 export const ChatList = () => {
   const { chats, fetchNextPage, hasNextPage, isLoading, isError, refetch } =
     useChatList();
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const options: IntersectionObserverInit = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 1.0,
+    };
+
+    const callback: IntersectionObserverCallback = (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          fetchNextPage();
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(callback, options);
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [chats]);
 
   if (isLoading && !chats) {
     return <p className="p-1 text-center text-gray-400">loading ...</p>;
@@ -34,7 +63,7 @@ export const ChatList = () => {
               />
             ))}
             {hasNextPage && (
-              <div className=" p-1">
+              <div className="px-1" ref={loaderRef}>
                 <SpinLoading />
               </div>
             )}

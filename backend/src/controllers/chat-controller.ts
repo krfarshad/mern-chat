@@ -9,7 +9,7 @@ import { staticPath } from "../utils/staticPath";
 
 class ChatHandler {
   public getChats = asyncHandler(async (req: Request, res: Response) => {
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 10 } = req.query;
     try {
       const userId = req.user;
       const chats = await Chat.find({
@@ -33,7 +33,9 @@ class ChatHandler {
         })
         .lean();
 
-      const total = await Chat.countDocuments();
+      const total = await Chat.countDocuments({
+        participants: { $in: [userId] },
+      });
 
       const filterData = chats.map((chat) => {
         return {
@@ -72,9 +74,8 @@ class ChatHandler {
       });
 
       await Chat.findByIdAndUpdate(chat?._id, { lastMessage: message._id });
-
+      console.log("io", io);
       io.to(chatId).emit("newMessage", message);
-
       const data = {
         id: message.id,
         text: message.text,
@@ -166,8 +167,6 @@ class ChatHandler {
 
     const users = await User.find({ username: { $in: members } });
     const userIds = users.map((user) => user._id);
-    console.log("users", users);
-    console.log("userIds", userIds);
 
     data.participants = [userId, ...userIds];
 
