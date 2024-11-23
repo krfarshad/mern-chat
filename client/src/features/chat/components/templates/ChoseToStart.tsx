@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import chose from "../../assets/chose.png";
 import StartChat from "../molecules/StartChat";

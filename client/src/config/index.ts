@@ -1,4 +1,5 @@
-export const BASE_API_URL = `${process?.env?.NEXT_PUBLIC_BASE_API_URL}`;
+export const BASE_API_URL = `${process?.env?.NEXT_PUBLIC_BASE_API_URL}/api/v1`;
+export const Back_URL = `${process?.env?.NEXT_PUBLIC_BASE_API_URL}`;
 
 export const BASE_APP_URL = process?.env?.NEXT_PUBLIC_BASE_APP_URL;
 

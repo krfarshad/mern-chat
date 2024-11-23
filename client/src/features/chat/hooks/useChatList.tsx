@@ -1,8 +1,7 @@
 "use client";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { getChats } from "../api/getChats";
-
 import { ChatListResponse } from "@/utils/models";
 import { useSocket } from "@/hooks/useSocket";
 
@@ -29,37 +28,45 @@ export const useChatList = () => {
   const chats = res.data?.pages.reduce((acc: ChatListResponse[], page) => {
     return page?.data ? [...acc, ...page?.data] : acc;
   }, []);
+  const handleNewMessage = useCallback(
+    (newMessage: any) => {
+      queryClient.setQueryData(["chats"], (oldData: any) => {
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) =>
+            page.data.map((chat: ChatListResponse) =>
+              chat._id === newMessage.chatId
+                ? { ...chat, lastMessage: newMessage }
+                : chat,
+            ),
+          ),
+        };
+      });
+    },
+    [queryClient],
+  );
+
+  const handleNewChat = useCallback(
+    (newChat: any) => {
+      queryClient.setQueryData(["chats"], (oldData: any) => ({
+        ...oldData,
+        pages: [[newChat, ...oldData.pages[0]], ...oldData.pages.slice(1)],
+      }));
+    },
+    [queryClient],
+  );
 
   useEffect(() => {
     if (socket) {
-      socket.on("newMessage", (newMessage) => {
-        queryClient.setQueryData(["chats"], (oldData: any) => {
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page: any) =>
-              page.data.map((chat: ChatListResponse) =>
-                chat._id === newMessage.chatId
-                  ? { ...chat, lastMessage: newMessage }
-                  : chat,
-              ),
-            ),
-          };
-        });
-      });
-
-      socket.on("newChat", (newChat) => {
-        queryClient.setQueryData(["chats"], (oldData: any) => ({
-          ...oldData,
-          pages: [[newChat, ...oldData.pages[0]], ...oldData.pages.slice(1)],
-        }));
-      });
+      socket.on("newMessage", handleNewMessage);
+      socket.on("newChat", handleNewChat);
 
       return () => {
-        socket.off("newMessage");
-        socket.off("newChat");
+        socket.off("newMessage", handleNewMessage);
+        socket.off("newChat", handleNewChat);
       };
     }
-  }, [queryClient, socket]);
+  }, [socket, handleNewMessage, handleNewChat]);
 
   return {
     ...res,
