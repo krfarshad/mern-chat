@@ -2,6 +2,7 @@ import usePost from "@/hooks/usePost";
 import { postMessage } from "../../api/postMessage";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { toast } from "react-toastify";
+import { useWebSocket } from "@/context/SocketProvider";
 
 type Props = {
   id: string;
@@ -13,6 +14,8 @@ const initValues = {
 type ChatProps = typeof initValues;
 export const ChatFooter = (props: Props) => {
   const { id } = props;
+  const socket = useWebSocket();
+
   const { isPending, post } = usePost({
     postFn: postMessage,
   });
@@ -28,6 +31,13 @@ export const ChatFooter = (props: Props) => {
       });
       if (res.isSuccess && res.data?.status == 201) {
         formikHelpers.resetForm();
+
+        const newMessage = {
+          roomId: id,
+          sender: res.data.data.sender,
+          message: res.data.data.text,
+        };
+        socket && socket.emit("newMessage", newMessage);
       } else {
         toast.error(res.data?.message ?? "Failed send message!");
       }

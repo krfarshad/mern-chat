@@ -3,9 +3,9 @@ import { Request, Response } from "express";
 import { Chat } from "../models/chat-model";
 import { ApiSuccess } from "../utils/ApiSuccess";
 import { Message } from "../models/message-model";
-import { io } from "../config/socket";
 import { User } from "../models/user-model";
 import { staticPath } from "../utils/staticPath";
+import { Socket } from "socket.io";
 
 class ChatHandler {
   public getChats = asyncHandler(async (req: Request, res: Response) => {
@@ -74,13 +74,17 @@ class ChatHandler {
       });
 
       await Chat.findByIdAndUpdate(chat?._id, { lastMessage: message._id });
-      console.log("io", io);
-      io.to(chatId).emit("newMessage", message);
+      const sender = await User.findById(userId).select("username");
+
       const data = {
+        chatId: chatId,
         id: message.id,
         text: message.text,
         createdAt: message.createdAt,
+        sender: sender?.username,
       };
+      const io: Socket = req.app.get("socketio");
+      io.to(chatId).emit("newMessage", data);
       res.status(201).json(new ApiSuccess(201, data, "successful posted"));
     } catch (error) {
       res.status(500).json({ message: "Error creating chat" });
@@ -225,14 +229,12 @@ class ChatHandler {
             users.find((user) => user._id.toString() === id.toString())
           ),
         };
-        io.to(chatId).emit("join", joinMessage);
 
         newParticipantsToAdd.forEach(async (id) => {
           const welcomeMessage = {
             chatId,
             message: "You have been added to the chat",
           };
-          io.to(id.toString()).emit("newChat", welcomeMessage);
         });
 
         res.json(
@@ -290,8 +292,6 @@ class ChatHandler {
         message: "A participant has left the group",
         userId,
       };
-
-      io.to(chatId).emit("leave", leaveMessage);
 
       // Return a success response
       res.json(new ApiSuccess(200, { chatId }, "Successfully left the group"));

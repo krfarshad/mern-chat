@@ -3,11 +3,11 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import { getChats } from "../api/getChats";
 import { ChatListResponse } from "@/utils/models";
-import { useSocket } from "@/hooks/useSocket";
+import { useWebSocket } from "@/context/SocketProvider";
 
 export const useChatList = () => {
   const queryClient = useQueryClient();
-  const socket = useSocket();
+  const socket = useWebSocket();
   const queryFn = (props: any) =>
     getChats({
       pageParam: props.pageParam,
@@ -28,23 +28,6 @@ export const useChatList = () => {
   const chats = res.data?.pages.reduce((acc: ChatListResponse[], page) => {
     return page?.data ? [...acc, ...page?.data] : acc;
   }, []);
-  const handleNewMessage = useCallback(
-    (newMessage: any) => {
-      queryClient.setQueryData(["chats"], (oldData: any) => {
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page: any) =>
-            page.data.map((chat: ChatListResponse) =>
-              chat._id === newMessage.chatId
-                ? { ...chat, lastMessage: newMessage }
-                : chat,
-            ),
-          ),
-        };
-      });
-    },
-    [queryClient],
-  );
 
   const handleNewChat = useCallback(
     (newChat: any) => {
@@ -58,15 +41,12 @@ export const useChatList = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("newMessage", handleNewMessage);
       socket.on("newChat", handleNewChat);
-
       return () => {
-        socket.off("newMessage", handleNewMessage);
         socket.off("newChat", handleNewChat);
       };
     }
-  }, [socket, handleNewMessage, handleNewChat]);
+  }, [socket, handleNewChat]);
 
   return {
     ...res,

@@ -7,9 +7,17 @@ type Props = {
   chatId: string;
 };
 
-export const postMessage = async (props: Props): Promise<ApiResponse<any>> => {
+type PostMessageResponse = {
+  id: number;
+  chatId: number;
+  text: string;
+  sender: string;
+  createdAt: string;
+};
+export const postMessage = async (
+  props: Props,
+): Promise<ApiResponse<PostMessageResponse>> => {
   const { values, chatId } = props;
-  console.log("postMessage", postMessage);
   const apiModel = new Chat();
 
   if (values && values?.images && values?.images?.length > 0) {

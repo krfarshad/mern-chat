@@ -64,20 +64,11 @@ const io = socket(server, {
 });
 
 io.on("connection", (socket: Socket) => {
-  console.log("connection", socket.id);
-
   socket.on("add-user", (userId) => {
-    console.log("userId", userId);
-  });
-  socket.on("newMessage", (newMessage) => {
-    console.log("New message:", newMessage);
-
-    io.to(newMessage.roomId).emit("newMessage", newMessage);
+    socket.join(userId);
   });
 
   socket.on("newChat", (newChat) => {
-    console.log("New chat:", newChat);
-
     io.to(newChat.roomId).emit("newChat", newChat);
   });
 
@@ -85,3 +76,5 @@ io.on("connection", (socket: Socket) => {
     console.log("Disconnected", socket.id);
   });
 });
+
+app.set("socketio", io);

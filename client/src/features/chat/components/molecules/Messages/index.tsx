@@ -6,6 +6,8 @@ import { SelfMessage } from "./SelfMessage";
 import { OtherMessage } from "./OtherMessage";
 import { Refetch } from "@/features/error";
 import { ChatContentLoading, SpinLoading } from "@/components";
+import { useQueryClient } from "@tanstack/react-query";
+import { useWebSocket } from "@/context/SocketProvider";
 
 type Props = {
   id: string;
@@ -14,7 +16,7 @@ type Props = {
 export const Messages = (props: Props) => {
   const { id } = props;
   const loaderRef = useRef<HTMLDivElement>(null);
-
+  const socket = useWebSocket();
   const { data: session } = useSession();
   const {
     messages,

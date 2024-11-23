@@ -5,6 +5,7 @@ import { FInput, FUpload, UsersMultiSelect } from "@/components";
 import { createChat } from "../../api/createChat";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useWebSocket } from "@/context/SocketProvider";
 
 const initialValuesGroup: CreateChatProps = {
   type: "private",
@@ -13,6 +14,8 @@ const initialValuesGroup: CreateChatProps = {
 };
 export const StartChatForm = () => {
   const [step, setStep] = useState(1);
+  const socket = useWebSocket();
+
   const router = useRouter();
   const handleNextStep = () => {
     setStep(step + 1);
@@ -26,6 +29,14 @@ export const StartChatForm = () => {
     const res = await createChat({ values });
     if (res.status == 201) {
       toast.success("Successful creation!");
+      if (socket) {
+        const newChat = {
+          roomId: res.data.id,
+          senderId: res.data.username,
+          type: res.data.type,
+        };
+        socket.emit("newChat", newChat);
+      }
       res.data.type === "private" && router.push(`/chats/${res.data.id}`);
     } else {
       toast.error(res.message ?? "Oppps try gain.");

@@ -6,7 +6,15 @@ type Props = {
   values: CreateChatProps;
 };
 
-export const createChat = async (props: Props): Promise<ApiResponse<any>> => {
+type CreateChatResponse = {
+  id: number;
+  username: string;
+  type: "private" | "group";
+};
+
+export const createChat = async (
+  props: Props,
+): Promise<ApiResponse<CreateChatResponse>> => {
   const { values } = props;
 
   const apiModel = new Chat();
