@@ -93,7 +93,6 @@ class AuthHandler {
     const { username, password } = req.body;
 
     const user: any = await User.findOne({ username });
-    console.log("user", user);
     if (!user) {
       res.status(401).json(new ApiError(401, "Incorrect username or password"));
     }
@@ -102,13 +101,10 @@ class AuthHandler {
     // const isMatch = await comparePassword(password, user.password);
     // const isMatch = await comparePassword(password, user.password);
 
-    console.log("isMatch", password);
-
     if (password != user.password) {
       res.status(401).json(new ApiError(401, "Incorrect username or password"));
     } else {
       const accessToken = await this.tokenCreation(req, res, user);
-      console.log("accessToken", accessToken);
 
       res
         .status(200)

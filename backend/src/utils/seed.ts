@@ -21,7 +21,6 @@ interface UserType {
 async function seedDatabase() {
   try {
     await mongoose.connect(MONGO_URI, {} as ConnectOptions);
-    console.log("Connected to MongoDB");
 
     // Clear existing collections
     await User.deleteMany({});
@@ -77,8 +76,6 @@ async function seedDatabase() {
 
       await chat.save();
     }
-
-    console.log("Database seeded successfully!");
   } catch (error) {
     console.error("Error seeding database:", error);
   } finally {
