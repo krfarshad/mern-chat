@@ -1,6 +1,6 @@
 import useMessages from "@/features/chat/hooks/useMessages";
 import { useSession } from "next-auth/react";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { SelfMessage } from "./SelfMessage";
 import { OtherMessage } from "./OtherMessage";
@@ -15,9 +15,9 @@ type Props = {
 
 export const Messages = (props: Props) => {
   const { id } = props;
+  const { data: session } = useSession();
   const loaderRef = useRef<HTMLDivElement>(null);
   const socket = useWebSocket();
-  const { data: session } = useSession();
   const {
     messages,
     isSuccess,
@@ -60,10 +60,22 @@ export const Messages = (props: Props) => {
   if (isLoading && !messages) {
     return <ChatContentLoading />;
   }
-
   if (isError) {
     return <Refetch onClick={refetch} />;
   }
+
+  const handleMarkMessagesAsRead = useCallback(() => {
+    if (socket && messages && messages.length > 0) {
+      const lastMessageId = messages[messages.length - 1]?.id;
+      if (lastMessageId) {
+        socket.emit("markAsRead", {
+          username: session?.user?.username,
+          chatId: id,
+          lastMessageId,
+        });
+      }
+    }
+  }, [socket, messages, id]);
 
   return (
     <div className="flex h-full w-full flex-col-reverse  overflow-y-auto">

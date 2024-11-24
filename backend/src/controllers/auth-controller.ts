@@ -1,7 +1,7 @@
 import { matchedData } from "express-validator";
 import { comparePassword, hashPassword } from "../utils/passwordUtils";
 import { Request, Response } from "express";
-import asyncHandler from "express-async-handler";
+import asyncHandler from "../middlewares/asyncHandler";
 import jwt from "jsonwebtoken";
 import { config } from "../config/global.config";
 import { ApiSuccess } from "../utils/ApiSuccess";
@@ -61,7 +61,7 @@ class AuthHandler {
   // @access public
   public logout = asyncHandler(async (req: Request, res: Response) => {
     if (!req.user) {
-      res.status(401).json(new ApiError(401, "Invalid data"));
+      return res.status(401).json(new ApiError(401, "Invalid data"));
     }
 
     req.logout((err) => {
@@ -93,16 +93,19 @@ class AuthHandler {
     const { username, password } = req.body;
 
     const user: any = await User.findOne({ username });
-    if (!user) {
-      res.status(401).json(new ApiError(401, "Incorrect username or password"));
+    if (user == null) {
+      return res
+        .status(401)
+        .json(new ApiError(401, "Incorrect username or password"));
     }
 
     // TODO: UNCOMMENT THIS COMPARE
     // const isMatch = await comparePassword(password, user.password);
     // const isMatch = await comparePassword(password, user.password);
-
     if (password != user.password) {
-      res.status(401).json(new ApiError(401, "Incorrect username or password"));
+      return res
+        .status(401)
+        .json(new ApiError(401, "Incorrect username or password"));
     } else {
       const accessToken = await this.tokenCreation(req, res, user);
 
@@ -126,11 +129,13 @@ class AuthHandler {
     const { csrfToken } = req.body;
 
     if (!csrfToken || !csrfToken.verify(config.csrf_secret, csrfToken)) {
-      res.status(403).json(new ApiError(403, "Invalid CSRF token"));
+      return res.status(403).json(new ApiError(403, "Invalid CSRF token"));
     }
 
     if (!refreshToken) {
-      res.status(401).json(new ApiError(401, "No refresh token provided"));
+      return res
+        .status(401)
+        .json(new ApiError(401, "No refresh token provided"));
     }
 
     jwt.verify(

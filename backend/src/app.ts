@@ -15,6 +15,8 @@ import path from "path";
 import { errorHandler } from "./middlewares/errorHandler";
 import logger from "./utils/logger";
 import { Socket } from "socket.io";
+import { UnreadMessage } from "./models/unread-model";
+import { User } from "./models/user-model";
 const socket = require("socket.io");
 
 const session = require("express-session");
@@ -65,7 +67,23 @@ const io = socket(server, {
 
 io.on("connection", (socket: Socket) => {
   socket.on("add-user", (userId) => {
+    socket.data.userId = userId;
     socket.join(userId);
+  });
+
+  socket.on("markAsRead", async ({ username, chatId, messageIds }) => {
+    try {
+      const user = await User.findOne({ username });
+      await UnreadMessage.findOneAndUpdate(
+        { userId: user?._id, chatId },
+        { $pull: { unreadMessages: { $lte: messageIds } } }
+      );
+    } catch (error) {
+      logger.error(
+        "error",
+        console.error("Error marking messages as read:", error)
+      );
+    }
   });
 
   socket.on("newChat", (newChat) => {

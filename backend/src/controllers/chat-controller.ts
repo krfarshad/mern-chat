@@ -6,6 +6,8 @@ import { Message } from "../models/message-model";
 import { User } from "../models/user-model";
 import { staticPath } from "../utils/staticPath";
 import { Socket } from "socket.io";
+import { UnreadMessage } from "../models/unread-model";
+import { Types } from "mongoose";
 
 class ChatHandler {
   public getChats = asyncHandler(async (req: Request, res: Response) => {
@@ -57,7 +59,6 @@ class ChatHandler {
       res.status(500).json({ message: "Error fetching chats" });
     }
   });
-  // post a message
   public postMessage = asyncHandler(async (req: Request, res: Response) => {
     const { chatId } = req.params;
     const { text } = req.body;
@@ -74,6 +75,8 @@ class ChatHandler {
       });
 
       await Chat.findByIdAndUpdate(chat?._id, { lastMessage: message._id });
+
+      userId && (await this.addUnreadMessage(chat?._id, message._id, userId));
       const sender = await User.findById(userId).select("username");
 
       const data = {
@@ -91,7 +94,6 @@ class ChatHandler {
     }
   });
 
-  //   get chat
   public getMessages = asyncHandler(async (req: Request, res: Response) => {
     const { chatId } = req.params;
     const { page = 1, limit = 10 } = req.query;
@@ -315,6 +317,36 @@ class ChatHandler {
     } catch (error) {
       res.status(500).json({ message: "Error adding participants to chat" });
     }
+  });
+
+  public addUnreadMessage = async (
+    chatId: Types.ObjectId,
+    messageId: Types.ObjectId,
+    userId: Express.User
+  ) => {
+    const usersInChat = await User.find({ "chats.chatId": chatId });
+
+    usersInChat.forEach(async (user) => {
+      if (user._id.toString() !== userId.toString()) {
+        await UnreadMessage.findOneAndUpdate(
+          { userId: user._id, chatId: chatId },
+          { $push: { unreadMessages: messageId } },
+          { upsert: true }
+        );
+      }
+    });
+  };
+
+  public readMessage = asyncHandler(async (req: Request, res: Response) => {
+    const { chatId, messageId } = req.params;
+    const userId = req.user;
+
+    await UnreadMessage.findOneAndUpdate(
+      { userId: userId, chatId: chatId },
+      { $pull: { unreadMessages: messageId } }
+    );
+
+    res.status(200).json({ message: "Message marked as read" });
   });
 }
 

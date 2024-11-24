@@ -20,7 +20,7 @@ export const LoginPage = () => {
         ...values,
         redirect: false,
       });
-
+      console.log("result", result);
       if (result?.error) {
         toast.error(result.error ?? "Login failed!");
       } else if (result?.status === 200) {

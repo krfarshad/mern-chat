@@ -20,49 +20,49 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("Missing credentials");
+        }
         const values = {
           username: credentials?.username,
           password: credentials?.password,
         };
-
         const res = await login({ values });
-
         if (res.data) {
           return res.data as any;
         }
-        return null;
+        throw new Error(`${res.message}`);
       },
     }),
   ],
   secret: NEXT_AUTH_SECRET,
   debug: false,
   session: {
-    maxAge: 24 * 60 * 60, // 24 hours
-    updateAge: 24 * 60 * 60,
+    strategy: "jwt",
+    maxAge: 8 * 60 * 60,
   },
   jwt: {
-    maxAge: 24 * 60 * 60,
+    maxAge: 8 * 60 * 60,
   },
   callbacks: {
     async signIn({ user }) {
-      return user ? true : false;
+      return !!user;
     },
     async redirect({ url, baseUrl }) {
-      return url;
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.user = user;
       }
-
       if (trigger === "update" && session?.user) {
         token.user = session.user;
       }
-
       return token;
     },
     async session({ session, token }) {
-      return { ...session, user: { ...(token?.user as {}) } };
+      session.user = token.user as typeof session.user;
+      return session;
     },
   },
   pages: {
@@ -70,34 +70,3 @@ export const authOptions: NextAuthOptions = {
     newUser: "/auth/register",
   },
 };
-
-async function refreshAccessToken(token: any) {
-  // try {
-  //   const response = await fetch(
-  //     `${process.env.NEXTAUTH_URL}/api/refresh-token`,
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ refreshToken: token.refreshToken }),
-  //     },
-  //   );
-  //   const refreshedTokens = await response.json();
-  //   if (!response.ok) {
-  //     throw refreshedTokens;
-  //   }
-  //   return {
-  //     ...token,
-  //     accessToken: refreshedTokens.accessToken,
-  //     accessTokenExpires: Date.now() + refreshedTokens.expiresIn * 1000,
-  //     refreshToken: refreshedTokens?.refreshToken ?? token.refreshToken,
-  //   };
-  // } catch (error) {
-  //   console.error("Error refreshing access token:", error);
-  //   return {
-  //     ...token,
-  //     error: "RefreshAccessTokenError",
-  //   };
-  // }
-}
