@@ -20,7 +20,7 @@ export const PrivateChatItem = (props: Props) => {
       <div className="relative flex items-center justify-center rounded-full bg-gray-200">
         <Badge
           content={
-            <span className="-mb-16 -ml-0.5 inline-block rounded-md bg-red-200 px-0.5 text-[8px]">
+            <span className="-mb-16 -ml-1 inline-block rounded-md bg-red-200 px-0.5 text-[9px]">
               {chatItem.type}
             </span>
           }
