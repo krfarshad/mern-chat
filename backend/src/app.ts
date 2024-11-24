@@ -79,10 +79,7 @@ io.on("connection", (socket: Socket) => {
         { $pull: { unreadMessages: { $lte: messageIds } } }
       );
     } catch (error) {
-      logger.error(
-        "error",
-        console.error("Error marking messages as read:", error)
-      );
+      logger.error("error", `${error}`);
     }
   });
 
@@ -91,7 +88,7 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Disconnected", socket.id);
+    // console.log("Disconnected", socket.id);
   });
 });
 

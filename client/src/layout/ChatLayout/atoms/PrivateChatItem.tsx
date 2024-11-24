@@ -15,22 +15,19 @@ export const PrivateChatItem = (props: Props) => {
   return (
     <Link
       href={`/chats/${chatItem?.id}`}
-      className={`flex flex-row items-center rounded-xl p-2 hover:bg-gray-100 ${isActive && "bg-sky-100"}`}
+      className={`flex flex-row items-center rounded-xl px-4 py-2 hover:bg-gray-100 ${isActive && "bg-sky-100"}`}
     >
       <div className="relative flex items-center justify-center rounded-full bg-gray-200">
         <Badge
-          content={
-            <span className="-mb-16 -ml-1 inline-block rounded-md bg-red-200 px-0.5 text-[9px]">
-              {chatItem.type}
-            </span>
-          }
+          content={<span className="text-[9px]">{chatItem.type}</span>}
           color="danger"
           size="sm"
-          placement="bottom-right"
+          placement="bottom-left"
+          variant="solid"
+          className="!border-0"
         >
           <Avatar
-            isBordered
-            color="danger"
+            color="warning"
             src={chatItem?.participants[0]?.avatar}
             alt={chatItem?.participants[0]?.username}
             className=" h-8 w-8 rounded-full"

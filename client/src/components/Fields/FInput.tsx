@@ -81,7 +81,6 @@ export const FInput: React.FC<FieldProps & ClassNameOptionalProps & Props> = (
         ) : null}
         {checkStrength && field.value && (
           <div className="error-messages mt-4 pr-2">
-            <div className="mb-2 h-1 w-full rounded-lg border border-neutral-800 bg-gradient-to-r from-pink-500 to-emerald-300 backdrop-blur-3xl transition-all"></div>
             {isPasswordStrong(field.value) ? (
               <span className="my-1 block text-sm text-success">
                 Wow... great, that's hard enough

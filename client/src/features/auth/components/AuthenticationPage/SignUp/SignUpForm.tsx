@@ -32,6 +32,8 @@ export const SignUpForm = (props: Props) => {
           toast.success("Successful registration!");
           setStep("complete");
         }
+      } else {
+        toast.error(res.message ?? "Registration failed!");
       }
     } catch (error) {
       toast.error("Something went wrong with your request!");

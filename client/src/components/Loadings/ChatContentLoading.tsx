@@ -1,26 +1,13 @@
-import { Skeleton } from "@nextui-org/react";
-
 export const ChatContentLoading = () => {
   return (
-    <div className="h-full w-full">
-      <Skeleton className="w-full">
-        <div className="h-10 rounded-lg bg-default-300"></div>
-      </Skeleton>
-      <div className="flex flex-col gap-4">
-        <div className="flex w-2/3 justify-end">
-          <Skeleton className="w-full">
-            <div className="h-10 rounded-lg bg-default-300"></div>
-          </Skeleton>
-        </div>
-        <div className="flex w-1/3 justify-start">
-          <Skeleton className="w-full">
-            <div className="h-10 rounded-lg bg-default-300"></div>
-          </Skeleton>
+    <div className="flex h-full w-full light">
+      <div className="inset-0 m-auto">
+        <div className="w-full p-1 text-center">
+          <span className="mx-auto w-full text-center text-sm text-gray-700">
+            Loading data
+          </span>
         </div>
       </div>
-      <Skeleton className="w-full">
-        <div className="h-10 rounded-lg bg-default-300"></div>
-      </Skeleton>
     </div>
   );
 };

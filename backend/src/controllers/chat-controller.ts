@@ -8,6 +8,7 @@ import { staticPath } from "../utils/staticPath";
 import { Socket } from "socket.io";
 import { UnreadMessage } from "../models/unread-model";
 import { Types } from "mongoose";
+import { ApiError } from "../utils/ApiError";
 
 class ChatHandler {
   public getChats = asyncHandler(async (req: Request, res: Response) => {
@@ -141,13 +142,24 @@ class ChatHandler {
         .populate("participants", "id username  avatar")
         .lean();
       if (!chat) {
-        return res.status(404).json({ message: "Chat not found" });
+        return res.status(404).json(new ApiError(404, "Chat not found!"));
+      }
+
+      const isParticipant = chat?.participants?.some(
+        (p) => p._id.toString() == userId
+      );
+      if (!isParticipant) {
+        return res
+          .status(403)
+          .json(new ApiError(403, "You are not part of this chat"));
       }
       const existingParticipantIds = chat?.participants?.filter(
         (p) => p._id.toString() != userId
       );
+
       const result = {
         ...chat,
+        avatar: chat.avatar && staticPath(req, "avatar", chat.avatar),
         participants: existingParticipantIds.map(({ _id, ...rest }) => rest),
       };
 
@@ -189,9 +201,9 @@ class ChatHandler {
         });
       }
 
-      res.json(new ApiSuccess(201, resultData, "Successful"));
+      return res.json(new ApiSuccess(201, resultData, "Successful"));
     } catch (error) {
-      res.status(500).json({ message: "Error fetching messages" });
+      return res.status(500).json({ message: "Error fetching messages" });
     }
   });
 

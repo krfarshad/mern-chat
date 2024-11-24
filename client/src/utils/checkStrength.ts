@@ -5,11 +5,9 @@ export const isPasswordStrong = (password: string): boolean => {
   const hasNumber = /\d/.test(password);
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-  const isStrong = 1;
+  const isStrong = hasUpperCase && hasLowerCase && hasNumber;
   // password.length >= minLength &&
-  // hasUpperCase &&
-  // hasLowerCase &&
-  // hasNumber &&
+
   // hasSpecialChar;
   return isStrong ? true : false;
 };

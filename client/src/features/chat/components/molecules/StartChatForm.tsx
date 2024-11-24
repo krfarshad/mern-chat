@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Button, Card, useDisclosure } from "@nextui-org/react";
+import { Button, Card } from "@nextui-org/react";
 import { Formik, Form, Field } from "formik";
 import { FInput, FUpload, UsersMultiSelect } from "@/components";
 import { createChat } from "../../api/createChat";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useWebSocket } from "@/context/SocketProvider";
+import { useQueryClient } from "@tanstack/react-query";
 
 const initialValuesGroup: CreateChatProps = {
   type: "private",
@@ -19,7 +20,7 @@ type Props = {
 
 export const StartChatForm = (props: Props) => {
   const { onClose } = props;
-
+  const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
   const socket = useWebSocket();
 
@@ -45,6 +46,7 @@ export const StartChatForm = (props: Props) => {
         socket.emit("newChat", newChat);
       }
       router.push(`/chats/${res.data.id}`);
+      queryClient.invalidateQueries({ queryKey: ["chatList"] });
       onClose();
     } else {
       toast.error(res.message ?? "Oppps try gain.");
@@ -52,11 +54,7 @@ export const StartChatForm = (props: Props) => {
   };
 
   return (
-    <Formik
-      initialValues={initialValuesGroup}
-      //   validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
+    <Formik initialValues={initialValuesGroup} onSubmit={handleSubmit}>
       {({ values, setFieldValue }) => (
         <Form className="flex w-full max-w-md flex-col gap-4">
           {step === 1 && (

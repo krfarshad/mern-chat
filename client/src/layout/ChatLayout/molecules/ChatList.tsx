@@ -61,7 +61,7 @@ export const ChatList = () => {
               dataLength={chats ? chats.length : 0}
               next={() => fetchNextPage()}
               hasMore={hasNextPage || false}
-              className="flex flex-col gap-2 px-1"
+              className="flex max-h-80 flex-col gap-2 px-1"
               loader={<></>}
             >
               <>

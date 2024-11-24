@@ -11,9 +11,9 @@ export const timeFormatter = (time: Date | string): string => {
       minute: "2-digit",
     });
   } else if (minutes >= 1) {
-    return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
   } else if (seconds > 0) {
-    return `${seconds} second${seconds > 1 ? "s" : ""}`;
+    return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
   } else {
     return `just now`;
   }

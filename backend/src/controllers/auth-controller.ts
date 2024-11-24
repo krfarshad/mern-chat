@@ -37,8 +37,7 @@ class AuthHandler {
         .status(400)
         .json(new ApiError(400, "Username or Email already exists"));
     }
-    //TODO:  enable hash password
-    // data.password = hashPassword(data.password);
+    data.password = hashPassword(data.password);
     const newUser = new User(data);
     const savedUser = await newUser.save();
 
@@ -99,17 +98,15 @@ class AuthHandler {
         .json(new ApiError(401, "Incorrect username or password"));
     }
 
-    // TODO: UNCOMMENT THIS COMPARE
-    // const isMatch = await comparePassword(password, user.password);
-    // const isMatch = await comparePassword(password, user.password);
-    if (password != user.password) {
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
       return res
         .status(401)
         .json(new ApiError(401, "Incorrect username or password"));
     } else {
       const accessToken = await this.tokenCreation(req, res, user);
 
-      res
+      return res
         .status(200)
         .json(
           new ApiSuccess(
@@ -167,7 +164,6 @@ class AuthHandler {
       res.status(401).json({ message: "Token is required" });
     } else {
       try {
-        // Decode and verify the JWT token
         const decoded: any = jwt.verify(token, config.jwt_secret);
         const { id } = decoded;
 
@@ -191,7 +187,7 @@ class AuthHandler {
               : "",
           };
 
-          res
+          return res
             .status(202)
             .json(
               new ApiSuccess(202, userResponse, "Profile updated successfully")
@@ -202,9 +198,9 @@ class AuthHandler {
           error.name === "JsonWebTokenError" ||
           error.name === "TokenExpiredError"
         ) {
-          res.status(401).json({ message: "Invalid or expired token" });
+          return res.status(401).json({ message: "Invalid or expired token" });
         }
-        res.status(500).json({ message: error });
+        return res.status(500).json({ message: error });
       }
     }
   });
