@@ -84,7 +84,7 @@ class ChatHandler {
         id: message.id,
         text: message.text,
         createdAt: message.createdAt,
-        sender: sender?.username,
+        sender: { username: sender?.username },
       };
       const io: Socket = req.app.get("socketio");
       io.to(chatId).emit("newMessage", data);

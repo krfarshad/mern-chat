@@ -19,7 +19,7 @@ const usePost = <Tc = undefined, Tcres = undefined>(
   const postMutation = useMutation({
     mutationFn: postFn,
     onSuccess: (res: ApiResponse<Tcres>) => {
-      queryClient.invalidateQueries({ queryKey });
+      queryKey && queryClient.invalidateQueries({ queryKey });
     },
     onError: () => {},
   });

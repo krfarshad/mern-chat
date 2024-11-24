@@ -64,18 +64,18 @@ export const Messages = (props: Props) => {
     return <Refetch onClick={refetch} />;
   }
 
-  const handleMarkMessagesAsRead = useCallback(() => {
-    if (socket && messages && messages.length > 0) {
-      const lastMessageId = messages[messages.length - 1]?.id;
-      if (lastMessageId) {
-        socket.emit("markAsRead", {
-          username: session?.user?.username,
-          chatId: id,
-          lastMessageId,
-        });
-      }
-    }
-  }, [socket, messages, id]);
+  // const handleMarkMessagesAsRead = useCallback(() => {
+  //   if (socket && messages && messages.length > 0) {
+  //     const lastMessageId = messages[messages.length - 1]?.id;
+  //     if (lastMessageId) {
+  //       socket.emit("markAsRead", {f
+  //         username: session?.user?.username,
+  //         chatId: id,
+  //         lastMessageId,
+  //       });
+  //     }
+  //   }
+  // }, [socket, messages, id]);
 
   return (
     <div className="flex h-full w-full flex-col-reverse  overflow-y-auto">

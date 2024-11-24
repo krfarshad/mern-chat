@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card } from "@nextui-org/react";
+import { Button, Card, useDisclosure } from "@nextui-org/react";
 import { Formik, Form, Field } from "formik";
 import { FInput, FUpload, UsersMultiSelect } from "@/components";
 import { createChat } from "../../api/createChat";
@@ -12,7 +12,14 @@ const initialValuesGroup: CreateChatProps = {
   participants: [],
   name: "",
 };
-export const StartChatForm = () => {
+
+type Props = {
+  onClose: () => void;
+};
+
+export const StartChatForm = (props: Props) => {
+  const { onClose } = props;
+
   const [step, setStep] = useState(1);
   const socket = useWebSocket();
 
@@ -27,7 +34,7 @@ export const StartChatForm = () => {
 
   const handleSubmit = async (values: any) => {
     const res = await createChat({ values });
-    if (res.status == 201) {
+    if (res.data) {
       toast.success("Successful creation!");
       if (socket) {
         const newChat = {
@@ -37,7 +44,8 @@ export const StartChatForm = () => {
         };
         socket.emit("newChat", newChat);
       }
-      res.data.type === "private" && router.push(`/chats/${res.data.id}`);
+      router.push(`/chats/${res.data.id}`);
+      onClose();
     } else {
       toast.error(res.message ?? "Oppps try gain.");
     }

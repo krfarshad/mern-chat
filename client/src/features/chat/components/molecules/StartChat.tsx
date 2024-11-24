@@ -22,7 +22,7 @@ const StartChat = () => {
         onOpenChange={onOpenChange}
         title="Start new Chat"
       >
-        <StartChatForm />
+        <StartChatForm onClose={onOpenChange} />
       </CustomModal>
     </>
   );

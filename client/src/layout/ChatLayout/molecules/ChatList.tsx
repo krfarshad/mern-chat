@@ -7,8 +7,15 @@ import { Refetch } from "@/features/error";
 import { useEffect, useRef } from "react";
 
 export const ChatList = () => {
-  const { chats, fetchNextPage, hasNextPage, isLoading, isError, refetch } =
-    useChatList();
+  const {
+    chats,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    isError,
+    refetch,
+    isSuccess,
+  } = useChatList();
   const loaderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,28 +54,34 @@ export const ChatList = () => {
 
   return (
     <>
-      {chats && chats.length > 0 && (
-        <InfiniteScroll
-          dataLength={chats ? chats.length : 0}
-          next={() => fetchNextPage()}
-          hasMore={hasNextPage || false}
-          className="flex flex-col gap-2 px-1"
-          loader={<></>}
-        >
-          <>
-            {chats?.map((chat) => (
-              <ChatListItem
-                key={`chat_item_${chat.id}_${chat.createdAt}`}
-                chatItem={chat}
-              />
-            ))}
-            {hasNextPage && (
-              <div className="px-1" ref={loaderRef}>
-                <SpinLoading />
-              </div>
-            )}
-          </>
-        </InfiniteScroll>
+      {isSuccess && chats && (
+        <>
+          {chats.length > 0 ? (
+            <InfiniteScroll
+              dataLength={chats ? chats.length : 0}
+              next={() => fetchNextPage()}
+              hasMore={hasNextPage || false}
+              className="flex flex-col gap-2 px-1"
+              loader={<></>}
+            >
+              <>
+                {chats?.map((chat) => (
+                  <ChatListItem
+                    key={`chat_item_${chat.id}_${chat.createdAt}`}
+                    chatItem={chat}
+                  />
+                ))}
+                {hasNextPage && (
+                  <div className="px-1" ref={loaderRef}>
+                    <SpinLoading />
+                  </div>
+                )}
+              </>
+            </InfiniteScroll>
+          ) : (
+            <p className="p-1 text-center text-xs">You have no chat yet!</p>
+          )}
+        </>
       )}
     </>
   );

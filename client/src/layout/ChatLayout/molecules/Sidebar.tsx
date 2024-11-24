@@ -20,12 +20,8 @@ export const Sidebar = () => {
       </div>
       <MyProfile />
       <div className="mt-8 flex flex-1 flex-col">
-        <div className="flex flex-row items-center justify-between text-xs">
+        <div className="flex flex-row items-center justify-between text-base">
           <span className="font-bold">All conversations</span>
-          {/* TODO: unread messages count */}
-          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gray-300">
-            4
-          </span>
         </div>
         <div className="-mx-4 mt-4 flex max-h-80 flex-col space-y-1 overflow-y-auto bg-slate-50 ">
           <ChatList />

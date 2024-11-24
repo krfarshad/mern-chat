@@ -34,7 +34,7 @@ export const ChatFooter = (props: Props) => {
 
         const newMessage = {
           roomId: id,
-          sender: res.data.data.sender,
+          sender: { username: res.data.data.sender },
           message: res.data.data.text,
         };
         socket && socket.emit("newMessage", newMessage);
