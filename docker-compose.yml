@@ -6,11 +6,13 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5005:5005"
+      - "5000:5000"
     volumes:
       - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       NODE_ENV: development
+      MONGO_URI: mongodb://db:27017/mern-chat
     networks:
       - fullstack-network
     depends_on:
@@ -25,6 +27,7 @@ services:
       - "3000:3000"
     volumes:
       - ./client:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       NODE_ENV: development
     networks:
@@ -37,12 +40,10 @@ services:
     container_name: mongo
     ports:
       - "27017:27017"
-    networks:
-      - mern-chat-network
     volumes:
       - mongo-data:/data/db
-    logging:
-      driver: "none"
+    networks:
+      - fullstack-network
     command: ["mongod", "--quiet"]
 
 networks:

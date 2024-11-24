@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
+COPY pnpm-lock.yaml ./
 
 # Install client dependencies
 RUN npm install
@@ -18,4 +19,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Start the Next.js application
-CMD ["npm", "run" , "dev"]
+CMD ["npm", "start"]

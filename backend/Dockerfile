@@ -7,10 +7,14 @@ WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
 
 # Install backend dependencies
 RUN npm install
 
+# Install only production dependencies
+RUN npm ci --only=production
 # Copy the rest of the backend code
 COPY . .
 
@@ -18,4 +22,4 @@ COPY . .
 EXPOSE 5000
 
 # Start the backend server
-CMD ["npm", "run" , "dev"]
+CMD ["npm", "start"]
