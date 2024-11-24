@@ -33,12 +33,12 @@ class AuthHandler {
     const { username, email } = data;
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      res
+      return res
         .status(400)
         .json(new ApiError(400, "Username or Email already exists"));
     }
-
-    data.password = hashPassword(data.password);
+    //TODO:  enable hash password
+    // data.password = hashPassword(data.password);
     const newUser = new User(data);
     const savedUser = await newUser.save();
 
@@ -51,7 +51,7 @@ class AuthHandler {
       email: savedUser.email,
     };
 
-    res
+    return res
       .status(201)
       .json(new ApiSuccess(201, userRegister, "Registered successfully"));
   });
