@@ -1,52 +1,63 @@
-describe("Authentication Flow", () => {
+describe("Login page", () => {
   const homePage = "/";
   const loginPage = "/auth/login";
-  const signUpPage = "/auth/register";
+  beforeEach(() => {
+    cy.visit(loginPage);
+  });
 
   it("Redirects unauthenticated user to login page (check middleware)", () => {
     cy.visit(homePage);
     cy.url().should("include", loginPage);
   });
 
-  it("Navigates to sign-up page and registers a new user", () => {
-    cy.visit(loginPage);
-
-    cy.contains("Sign Up").click();
-
-    // Assert URL includes signup route
-    cy.url().should("include", signUpPage);
-
-    // Fill registration form
-    cy.get('input[name="username"]').type("testuser");
-    cy.get('input[name="email"]').type("testuser@example.com");
+  it("Failed login authentication", () => {
+    cy.get('input[name="username"]').type("testuser@example.com");
     cy.get('input[name="password"]').type("Password123!");
-
-    // Submit form
-    cy.get("form").submit();
-
-    // Verify successful registration (e.g., redirection to login page or success message)
     cy.url().should("include", loginPage);
-    cy.contains("Registration successful").should("exist");
   });
 
-  it("Logs in with valid credentials", () => {
-    // Visit the login page
-    cy.visit(loginPage);
+  it("Success authentication", async () => {
+    const username = Cypress.env("username");
+    const password = Cypress.env("password");
 
-    // Fill login form
-    cy.get('input[name="email"]').type("testuser@example.com");
+    cy.get('input[name="username"]').type(username);
+    cy.get('input[name="password"]').type(password);
+
+    await cy.get("form").submit();
+    cy.url().should("eq", Cypress.config().baseUrl);
+  });
+});
+
+describe("Register page", () => {
+  const signUpPage = "/auth/register";
+
+  beforeEach(() => {
+    cy.visit(signUpPage);
+  });
+
+  it("Failed registration", async () => {
+    const username = Cypress.env("username");
+    cy.get('input[name="username"]').type(`${username}`);
+    cy.get('input[name="email"]').type("test@gmail.com");
     cy.get('input[name="password"]').type("Password123!");
 
-    // Submit form
-    cy.get("form").submit();
+    await cy.get("form").submit();
 
-    // Verify redirection to homepage after successful login
-    cy.url().should("eq", Cypress.config().baseUrl + homePage);
+    cy.url().should("include", signUpPage);
+    cy.contains("Please complete your profile").should("not.exist");
+    cy.contains("Welcome, Please fill out all fields.").should("exist");
+  });
 
-    // Check if a token is stored (optional)
-    cy.window()
-      .its("localStorage")
-      .invoke("getItem", "authToken")
-      .should("exist");
+  it("Successful registration", async () => {
+    const email = `test-user+${Date.now()}@example.com`;
+    const username = `user${Date.now()}`;
+
+    cy.get('input[name="username"]').type(username);
+    cy.get('input[name="email"]').type(email);
+    cy.get('input[name="password"]').type("Password123!");
+
+    await cy.get("form").submit();
+    cy.url().should("eq", signUpPage);
+    cy.contains("Please complete your profile").should("exist");
   });
 });
