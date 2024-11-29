@@ -5,10 +5,8 @@ import { FInput, FSubmit } from "@/components/Fields";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 
 export const LoginPage = () => {
-  const router = useRouter();
   const initValues = {
     username: "",
     password: "",
@@ -20,11 +18,12 @@ export const LoginPage = () => {
         ...values,
         redirect: false,
       });
+      console.log(result);
       if (result?.error) {
         toast.error(result.error ?? "Login failed!");
       } else if (result?.status === 200) {
         toast.success("Successful login!");
-        router.push("/");
+        window.location.href = "/";
       }
     } catch (error) {
       toast.error("Something went wrong with your request!");
