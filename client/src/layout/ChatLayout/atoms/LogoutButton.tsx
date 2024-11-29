@@ -12,6 +12,7 @@ const LogoutButton = () => {
   return (
     <button
       onClick={logoutHandler}
+      aria-label="Logout"
       className="flex-1 rounded-md bg-slate-200 px-4 py-2 text-sm text-slate-800"
     >
       Logout
