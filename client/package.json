@@ -33,6 +33,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.0.3",
     "@tanstack/eslint-plugin-query": "^5.35.6",
     "@tanstack/react-query-devtools": "4",
     "@types/node": "^20",
