@@ -7,10 +7,7 @@ describe("Register page", () => {
 
   it("Failed registration", async () => {
     const username = Cypress.env("username");
-    cy.get('input[name="username"]').type(`${username}`);
-    cy.get('input[name="email"]').type("test@gmail.com");
-    cy.get('input[name="password"]').type("Password123!");
-
+    cy.register(username, "test@gmail.com", "Password123!");
     await cy.get("form").submit();
 
     cy.url().should("include", signUpPage);
@@ -22,10 +19,7 @@ describe("Register page", () => {
     const email = `test-user+${Date.now()}@example.com`;
     const username = `user${Date.now()}`;
 
-    cy.get('input[name="username"]').type(username);
-    cy.get('input[name="email"]').type(email);
-    cy.get('input[name="password"]').type("Password123!");
-
+    cy.register(username, email, "Password123!");
     await cy.get("form").submit();
     cy.url().should("eq", signUpPage);
     cy.contains("Please complete your profile").should("exist");
@@ -55,8 +49,7 @@ describe("Login page", () => {
   });
 
   it("Failed login authentication", () => {
-    cy.get('input[name="username"]').type("testuser@example.com");
-    cy.get('input[name="password"]').type("Password123!");
+    cy.login("testuser", "Password123!");
     cy.url().should("include", loginPage);
   });
 
@@ -64,8 +57,7 @@ describe("Login page", () => {
     const username = Cypress.env("username");
     const password = Cypress.env("password");
 
-    cy.get('input[name="username"]').type(username);
-    cy.get('input[name="password"]').type(password);
+    cy.login(username, password);
 
     await cy.get("form").submit();
     cy.url().should("eq", Cypress.config().baseUrl);

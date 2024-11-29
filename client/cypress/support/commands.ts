@@ -35,3 +35,17 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add("login", (username: string, password: string) => {
+  cy.get("input[name='username']").type(username);
+  cy.get("input[name='password']").type(password);
+});
+
+Cypress.Commands.add(
+  "register",
+  (username: string, email: string, password: string) => {
+    cy.get("input[name='username']").type(username);
+    cy.get("input[name='email']").type(username);
+    cy.get("input[name='password']").type(password);
+  },
+);
